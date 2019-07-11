@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system</IncludePath>
+              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -412,6 +412,11 @@
               <FileType>1</FileType>
               <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -426,6 +431,13 @@
         </Group>
         <Group>
           <GroupName>src/drivers</GroupName>
+          <Files>
+            <File>
+              <FileName>inout.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\drivers\inout.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>src/system</GroupName>
