@@ -385,7 +385,7 @@
             <File>
               <FileName>startup_stm32f427_437xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\lib\spl\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f427_437xx.s</FilePath>
+              <FilePath>..\src\system\startup_stm32f427_437xx.s</FilePath>
             </File>
           </Files>
         </Group>
