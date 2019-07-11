@@ -1,0 +1,12 @@
+CMSIS V4.00
+spl V1.8.0 / 04-November-2016
+
+
+doc - documentation, schematics, flowcharts, uml and so on
+lib -   lwip
+        FreeRTOS
+        spl
+        and so on
+
+src - source code (src, include)
+test - unit test
