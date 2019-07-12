@@ -188,7 +188,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers</IncludePath>
+              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -417,6 +417,11 @@
               <FileType>1</FileType>
               <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -426,6 +431,11 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\firm\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>mainTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\firm\mainTask.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -446,6 +456,71 @@
               <FileName>system_stm32f4xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\system\system_stm32f4xx.c</FilePath>
+            </File>
+            <File>
+              <FileName>freeRTOS_debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\system\freeRTOS_debug.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>freeRTOS</GroupName>
+          <Files>
+            <File>
+              <FileName>croutine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\croutine.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>stream_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\stream_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\timers.c</FilePath>
+            </File>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>heap_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\FreeRTOS\Source\portable\MemMang\heap_4.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>src/debug</GroupName>
+          <Files>
+            <File>
+              <FileName>debugTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\debug\debugTask.c</FilePath>
             </File>
           </Files>
         </Group>
