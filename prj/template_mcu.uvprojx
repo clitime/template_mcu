@@ -422,6 +422,11 @@
               <FileType>1</FileType>
               <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -446,6 +451,11 @@
               <FileName>inout.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\drivers\inout.c</FilePath>
+            </File>
+            <File>
+              <FileName>at24_eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\drivers\at24_eeprom.c</FilePath>
             </File>
           </Files>
         </Group>

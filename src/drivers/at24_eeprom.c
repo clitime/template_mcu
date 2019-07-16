@@ -27,7 +27,7 @@ void I2C_config(void) {
     GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;
     GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOB, &GPIO_InitStruct);
-     
+
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_I2C1);
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource8, GPIO_AF_I2C1);
 
@@ -51,8 +51,6 @@ void I2C_config(void) {
 uint8_t I2C_write(const uint16_t reg, const uint8_t *buffer, const uint32_t len) {
     uint32_t i;
     uint8_t slaveAdr = 0xa0;
-
-    // slaveAdr |= (uint8_t)((reg >> 7) & 0x0e);
 
     PCA_Timeout = PCA_LONG_TIMEOUT;
     while (I2C_GetFlagStatus(PCA_I2C,I2C_FLAG_BUSY)) {
@@ -78,7 +76,7 @@ uint8_t I2C_write(const uint16_t reg, const uint8_t *buffer, const uint32_t len)
         }
     }
 
-    I2C_SendData(PCA_I2C, (uint8_t)(reg & 0x00ff));
+    I2C_SendData(PCA_I2C, (uint8_t)(reg & 0xff00) >> 0x08);
     PCA_Timeout = PCA_FLAG_TIMEOUT;
     while(!I2C_CheckEvent(PCA_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED)) {
         if((PCA_Timeout--) == 0) {
@@ -86,7 +84,7 @@ uint8_t I2C_write(const uint16_t reg, const uint8_t *buffer, const uint32_t len)
         }
     }
 
-    I2C_SendData(PCA_I2C, (uint8_t)(reg & 0xff00) >> 0x08);
+    I2C_SendData(PCA_I2C, (uint8_t)(reg & 0x00ff));
     PCA_Timeout = PCA_FLAG_TIMEOUT;
     while(!I2C_CheckEvent(PCA_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED)) {
         if((PCA_Timeout--) == 0) {
@@ -112,8 +110,6 @@ uint8_t I2C_read(const uint16_t reg, uint8_t *buffer, const uint32_t len) {
     uint32_t i;
 
     uint8_t slaveAdr = 0xa0;
-
-    // slaveAdr |= (uint8_t)((reg >> 7) & 0x0e);
 
     PCA_Timeout = PCA_LONG_TIMEOUT;
     while (I2C_GetFlagStatus(PCA_I2C,I2C_FLAG_BUSY)) {
@@ -194,16 +190,10 @@ uint8_t I2C_read(const uint16_t reg, uint8_t *buffer, const uint32_t len) {
 }
 
 
-uint8_t readData (const uint16_t adr, uint8_t* data, const uint16_t len) {
+uint8_t readData (const uint16_t adr, uint8_t* data, uint16_t len) {
     uint8_t result = I2C_OK;
 
-    for (uint16_t ix = 0; ix != len; ++ix) {
-        result = I2C_read(adr + ix, &data[ix], 1);
-        if (result != I2C_OK) {
-            I2C_config();
-            result = I2C_read(adr + ix, &data[ix], 1);
-        }
-    }
+    result = I2C_read(adr, data, len);
 
     return result;
 }
@@ -213,17 +203,17 @@ uint8_t readData (const uint16_t adr, uint8_t* data, const uint16_t len) {
 #include "FreeRTOS.h"
 #include "task.h"
 
-uint8_t writeData(const uint16_t adr, const uint8_t* data, const uint16_t len) {
+uint8_t writeData(const uint16_t adr, const uint8_t* data, uint16_t len) {
     uint8_t result = I2C_OK;
 
     uint16_t ix = 0;
-    while (ix < len) {
-        uint16_t tmp_len = 1;
-
-        result = I2C_write(adr + ix, &data[ix], tmp_len);
-
-        ix += tmp_len;
+    while (len) {
+        uint16_t tl = len > 128 ? 128 : len;
+        I2C_write(adr + ix, &data[ix], tl);
         vTaskDelay(5);
+
+        ix += tl;
+        len -= tl;
     }
 
     return result;
