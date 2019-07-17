@@ -27,6 +27,7 @@ enum IO_State_t {
 
 /*    name         port       pin          mode           o_type              pu_pd             speed         state  */
 #define OUT_MAP(XX)                                                                                              \
+    XX(PA12_LIMIT,  GPIOA,  GPIO_Pin_12,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_DOWN,  GPIO_High_Speed,  IO_RESET) \
     XX(LED_R,       GPIOC,  GPIO_Pin_10,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_UP,    GPIO_High_Speed,  IO_RESET) \
     XX(LED_G,       GPIOC,  GPIO_Pin_11,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_UP,    GPIO_High_Speed,  IO_RESET)
 
