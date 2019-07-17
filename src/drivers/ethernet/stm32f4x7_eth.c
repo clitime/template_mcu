@@ -1,9 +1,8 @@
+#include "stm32f4x7_eth_conf.h"
 #include "stm32f4x7_eth.h"
 
 #include "stm32f4xx_rcc.h"
 
-
-#include "stm32f4x7_eth_conf.h"
 
 
 /**
@@ -36,9 +35,9 @@ void ETH_DeInit(void) {
 
 void ETH_StructInit(ETH_InitTypeDef* ETH_InitStruct) {
     /*------------------------   MAC Configuration   ---------------------------*/
-    ETH_InitStruct->ETH_AutoNegotiation = ETH_AutoNegotiation_Disable;
-    ETH_InitStruct->ETH_Speed = ETH_Speed_100M;
-    ETH_InitStruct->ETH_Mode = ETH_Mode_FullDuplex;
+    ETH_InitStruct->ETH_AutoNegotiation = ETH_AUTONEGOTIATION;
+    ETH_InitStruct->ETH_Speed = ETH_SPEED;
+    ETH_InitStruct->ETH_Mode = ETH_DUPLEX_MODE;
     ETH_InitStruct->ETH_Watchdog = ETH_Watchdog_Enable;
     ETH_InitStruct->ETH_Jabber = ETH_Jabber_Enable;
     ETH_InitStruct->ETH_InterFrameGap = ETH_InterFrameGap_96Bit;
@@ -1058,7 +1057,7 @@ uint32_t ETH_GetMMCRegister(uint32_t ETH_MMCReg) {
 #define PHY_READ_TO                     ((uint32_t)0x0004FFFF)
 #define PHY_WRITE_TO                    ((uint32_t)0x0004FFFF)
 
-uint16_t ETH_ReadPHYRegister(uint16_t PHYAddress, uint16_t PHYReg) {
+uint32_t ETH_ReadPHYRegister(uint16_t PHYAddress, uint16_t PHYReg, uint16_t *PHYVal) {
     uint32_t tmpreg = 0;
     __IO uint32_t timeout = 0;
 
@@ -1080,11 +1079,12 @@ uint16_t ETH_ReadPHYRegister(uint16_t PHYAddress, uint16_t PHYReg) {
     } while ((tmpreg & ETH_MACMIIAR_MB) && (timeout < (uint32_t)PHY_READ_TO));
     /* Return ERROR in case of timeout */
     if(timeout == PHY_READ_TO) {
-        return (uint16_t)ETH_ERROR;
+        return ETH_ERROR;
     }
 
+    *PHYVal = (uint16_t)(ETH->MACMIIDR);
     /* Return data register value */
-    return (uint16_t)(ETH->MACMIIDR);
+    return ETH_SUCCESS;
 }
 
 

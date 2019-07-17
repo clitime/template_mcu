@@ -20,7 +20,7 @@
 
     #define dPrintf(x)                                                      \
     do {                                                                    \
-        printf(x);                                                          \
+        printf x;                                                           \
     } while(0)
 
     #define dmPrintf(enable, msg)                                           \

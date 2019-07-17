@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx</Define>
+              <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx,DEBUG_PORT</Define>
               <Undefine></Undefine>
               <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug;..\src\drivers\ethernet</IncludePath>
             </VariousControls>
@@ -561,6 +561,11 @@
               <FileName>ioconf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\drivers\ethernet\ioconf.c</FilePath>
+            </File>
+            <File>
+              <FileName>physics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\drivers\ethernet\physics.c</FilePath>
             </File>
           </Files>
         </Group>

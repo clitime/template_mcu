@@ -11,7 +11,7 @@
 #define ETHER_NAME_MAP(XX)                                                                                                                    \
     XX(RX0_P,        GPIOC,  GPIO_Pin_4,    GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource4)  \
     XX(RX0_N,        GPIOC,  GPIO_Pin_5,    GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource5)  \
-    XX(MDC,          GPIOC,  GPIO_Pin_0,    GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource1)  \
+    XX(MDC,          GPIOC,  GPIO_Pin_1,    GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource1)  \
     XX(TX0_EN,       GPIOB,  GPIO_Pin_11,   GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource11) \
     XX(TX0_P,        GPIOB,  GPIO_Pin_12,   GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource12) \
     XX(TX0_N,        GPIOB,  GPIO_Pin_13,   GPIO_Mode_AF,   GPIO_OType_PP,  GPIO_PuPd_NOPULL, GPIO_High_Speed,  GPIO_AF_ETH,  GPIO_PinSource13) \

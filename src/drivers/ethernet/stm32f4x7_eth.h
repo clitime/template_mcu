@@ -1427,7 +1427,7 @@ ITStatus ETH_GetMMCITStatus(uint32_t ETH_MMC_IT);
 uint32_t ETH_GetMMCRegister(uint32_t ETH_MMCReg);
 
 
-uint16_t ETH_ReadPHYRegister(uint16_t PHYAddress, uint16_t PHYReg);
+uint32_t ETH_ReadPHYRegister(uint16_t PHYAddress, uint16_t PHYReg, uint16_t *PHYVal);
 uint32_t ETH_WritePHYRegister(uint16_t PHYAddress, uint16_t PHYReg, uint16_t PHYValue);
 
 #endif
