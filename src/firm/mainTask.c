@@ -17,7 +17,7 @@ void mainTask(void *p) {
     (void)p;
     I2C_config();
 
-    for (uint32_t i = 0, j = dataSize; i < dataSize; i++) {
+    for (uint32_t i = 0; i < dataSize; i++) {
         data2[i] = 0xff;
     }
     writeData(128, data2, dataSize);

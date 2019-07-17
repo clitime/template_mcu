@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug</IncludePath>
+              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug;..\src\drivers\ethernet</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -427,6 +427,16 @@
               <FileType>1</FileType>
               <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_syscfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\spl\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_exti.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -441,6 +451,11 @@
               <FileName>mainTask.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\firm\mainTask.c</FilePath>
+            </File>
+            <File>
+              <FileName>ethernetTestTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\firm\ethernetTestTask.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -531,6 +546,21 @@
               <FileName>debugTask.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\debug\debugTask.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>src/drivers/ethernet</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32f4x7_eth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\drivers\ethernet\stm32f4x7_eth.c</FilePath>
+            </File>
+            <File>
+              <FileName>ioconf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\drivers\ethernet\ioconf.c</FilePath>
             </File>
           </Files>
         </Group>
