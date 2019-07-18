@@ -18,17 +18,20 @@ enum IO_State_t {
 
 
     /*  name         port     pin             mode          pu_pd     */
-#define IN_MAP(XX)                                                          \
+#define IN_MAP(XX)                                                            \
     XX(JP1,         GPIOF,  GPIO_Pin_2,     GPIO_Mode_IN, GPIO_PuPd_UP)       \
     XX(JP2,         GPIOF,  GPIO_Pin_3,     GPIO_Mode_IN, GPIO_PuPd_UP)       \
     XX(JP3,         GPIOF,  GPIO_Pin_4,     GPIO_Mode_IN, GPIO_PuPd_UP)       \
+    XX(MDC,         GPIOC,  GPIO_Pin_0,     GPIO_Mode_IN, GPIO_PuPd_NOPULL)   \
     XX(TAMPER,      GPIOB,  GPIO_Pin_14,    GPIO_Mode_IN, GPIO_PuPd_UP)
 
 
 /*    name         port       pin          mode           o_type              pu_pd             speed         state  */
-#define OUT_MAP(XX)                                                                                              \
+#define OUT_MAP(XX)                                                                                                    \
+    XX(PA12_LIMIT,  GPIOA,  GPIO_Pin_12,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_DOWN,  GPIO_High_Speed,  IO_RESET) \
     XX(LED_R,       GPIOC,  GPIO_Pin_10,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_UP,    GPIO_High_Speed,  IO_RESET) \
-    XX(LED_G,       GPIOC,  GPIO_Pin_11,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_UP,    GPIO_High_Speed,  IO_RESET)
+    XX(LED_G,       GPIOC,  GPIO_Pin_11,  GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_UP,    GPIO_High_Speed,  IO_RESET) \
+    XX(LED_G_ETH,   GPIOA,  GPIO_Pin_6,   GPIO_Mode_OUT,  GPIO_OType_PP,  GPIO_PuPd_UP,    GPIO_High_Speed,  IO_RESET)
 
 
 enum InputMap_t {
