@@ -82,6 +82,7 @@ struct netif xnetif = {
 static void ethernetif_input(struct netif *netif);
 static void link_status_callback(struct netif *netif);
 static void link_status(void *args);
+static void ethernetif_input(void *arg);
 
 
 static void link_status_callback(struct netif *netif) {
@@ -111,24 +112,10 @@ static void link_status_callback(struct netif *netif) {
         ETH_MACInit(&ETH_InitStructure);
 
         PHY_configIRQ_linkDownUp();
-
-        // XMC_ETH_MAC_EnableEvent(&eth_mac, (uint32_t)XMC_ETH_MAC_EVENT_RECEIVE);
-
-        // NVIC_SetPriority((IRQn_Type)108, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 62U, 0U));
-        // NVIC_ClearPendingIRQ((IRQn_Type)108);
-        // NVIC_EnableIRQ((IRQn_Type)108);
-        // XMC_ETH_MAC_EnableTx(&eth_mac);
-        // XMC_ETH_MAC_EnableRx(&eth_mac);
-
+        ETH_Start();
         tcpip_callback((tcpip_callback_fn)netif_set_up, &xnetif);
     } else {
-
-    //     XMC_ETH_MAC_DisableEvent(&eth_mac, (uint32_t)XMC_ETH_MAC_EVENT_RECEIVE);
-    //     NVIC_DisableIRQ((IRQn_Type)108);
-
-    //     XMC_ETH_MAC_DisableTx(&eth_mac);
-    //     XMC_ETH_MAC_DisableRx(&eth_mac);
-
+        ETH_Stop();
         tcpip_callback((tcpip_callback_fn)netif_set_down, &xnetif);
     }
 }
@@ -362,24 +349,29 @@ low_level_input(struct netif *netif)
  *
  * @param netif the lwip network interface structure for this ethernetif
  */
-static void
-ethernetif_input(struct netif *netif)
-{
-    struct ethernetif *ethernetif;
+static void ethernetif_input(void *arg) {
+    struct netif *netif = (struct netif *)arg;
     struct eth_hdr *ethhdr;
     struct pbuf *p;
 
-    ethernetif = netif->state;
+    for (;;) {
+        waitSemaphore();
 
-    /* move received packet into a new pbuf */
-    p = low_level_input(netif);
-    /* if no packet could be read, silently ignore this */
-    if (p != NULL) {
-        /* pass all packets to ethernet_input, which decides what packets it supports */
-        if (netif->input(p, netif) != ERR_OK) {
-            LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
-            pbuf_free(p);
-            p = NULL;
+        while ((p = low_level_input(netif)) != NULL) {
+            ethhdr = p->payload;
+            switch (htons(ethhdr->type))
+            {
+            case ETHTYPE_IP:
+            case ETHTYPE_ARP:
+                /* full packet send to tcpip_thread to process */
+                if (netif->input(p, netif) != ERR_OK) {
+                    pbuf_free(p);
+                }
+                break;
+            default:
+                pbuf_free(p);
+                break;
+            }
         }
     }
 }
@@ -418,7 +410,7 @@ err_t ethernetif_init(struct netif *netif) {
     netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP;// | NETIF_FLAG_LINK_UP;
 
     // sys_sem_new(&rx_semaphore, 0U);
-    // sys_thread_new("eth_rx_input_thread", ethernetif_input, netif, 512U, osPriorityBelowNormal);
+    xTaskCreate(ethernetif_input, "ethernetif", configMINIMAL_STACK_SIZE * 3, NULL, configMAX_PRIORITIES - 2, NULL);
 
     netif_set_link_callback(netif, link_status_callback);
     xTaskCreate(link_status, "link_status", configMINIMAL_STACK_SIZE * 1, NULL, MAIN_TASK_PRIO, NULL);
