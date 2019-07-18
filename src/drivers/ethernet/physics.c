@@ -20,8 +20,9 @@
 #define REG_ANLPAR              (0x05U)        /* Auto-Neg. Link Partner Abitily    */
 #define REG_ANER                (0x06U)        /* Auto-Neg. Expansion Register      */
 #define REG_ANNPTR              (0x07U)        /* Auto-Neg. Next Page TX            */
+#define REG_IRQCS               (0x1bU)        /* Interrupt control/status          */
 #define REG_PHYCTRL1            (0x1eU)        /* PHY control 1 Register            */
-#define REG_PHYCTRL2            (0x1fU)        /* PHY control 1 Register            */
+#define REG_PHYCTRL2            (0x1fU)        /* PHY control 2 Register            */
 
 /**
  *                               MASK
@@ -51,6 +52,10 @@
 #define BMSR_JABBER_DET         (0x0002U)      /* Jaber Detect                      */
 #define BMSR_EXT_CAPAB          (0x0001U)      /* Extended Capability               */
 
+#define IRQCS_LINK_DOWN         (0x0400U)      /* Link down interrupt enable (1 en) */
+#define IRQCS_LINK_UP           (0x0100U)      /* Link up interrupt enable (1 en)   */
+#define IRQCS_LINK_DOWN_IRQ     (0x0004U)      /* LInk down irq                     */
+#define IRQCS_LINK_UP_IRQ       (0x0001U)      /* Link up irq                       */
 /* PHY control 1 Register */
 #define PHYCTRL1_OPMODE_SPEED   (0x0002U)
 #define PHYCTRL1_OPMODE_DUPLEX  (0x0004U)
@@ -266,4 +271,35 @@ uint32_t ETH_PHYInit(uint8_t isAutonegotiation, struct DuplexSpeed duplexSpeed) 
     }
 
     return PHY_OK;
+}
+
+
+uint32_t PHY_configIRQ_linkDownUp(void) {
+    uint16_t reg = 0;
+    if (readRegister(REG_IRQCS, &reg) == ETH_ERROR) {
+        return PHY_ERR;
+    }
+
+    reg |= IRQCS_LINK_DOWN | IRQCS_LINK_UP;
+    if (writeRegister(REG_IRQCS, reg)) {
+        return PHY_OK;
+    }
+    return PHY_ERR;
+}
+
+
+uint32_t PHY_getCauseIRQ(void) {
+    uint16_t reg = 0;
+    if (readRegister(REG_IRQCS, &reg) == ETH_ERROR) {
+        return PHY_ERR;
+    }
+
+    if (reg & IRQCS_LINK_UP_IRQ) {
+        return PHY_LINK_UP_IRQ;
+    }
+    if (reg & IRQCS_LINK_DOWN_IRQ) {
+        return PHY_LINK_DOWN_IRQ;
+    }
+
+    return PHY_ERR;
 }

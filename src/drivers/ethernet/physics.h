@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-
+#define PHY_LINK_UP_IRQ                 (1)
+#define PHY_LINK_DOWN_IRQ               (2)
 #define PHY_LINK_UP                     (1)
 #define PHY_LINK_DOWN                   (0)
 #define PHY_OK                          (1)
@@ -26,7 +27,10 @@ struct DuplexSpeed {
     uint32_t duplex;
 };
 
+
 struct DuplexSpeed PHY_getLinkSpeed(void);
 uint32_t ETH_PHYInit(uint8_t isAutonegotiation, struct DuplexSpeed duplexSpeed);
+uint32_t PHY_configIRQ_linkDownUp(void);
+uint32_t PHY_getCauseIRQ(void);
 
 #endif

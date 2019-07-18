@@ -41,7 +41,7 @@ void ETH_ConfigIO(void) {
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
 
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0D;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
