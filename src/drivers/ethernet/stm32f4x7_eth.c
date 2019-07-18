@@ -1118,3 +1118,43 @@ uint32_t ETH_WritePHYRegister(uint16_t PHYAddress, uint16_t PHYReg, uint16_t PHY
     /* Return SUCCESS */
     return ETH_SUCCESS;
 }
+
+
+/*                          DMA descriptors                  */
+void ETH_DMARxDescChainInit(ETH_DMADESCTypeDef *DMARxDescTab, uint8_t *RxBuff, uint32_t RxBuffCount) {
+    uint32_t i = 0;
+    ETH_DMADESCTypeDef *DMARxDesc;
+
+    /* Set the DMARxDescToGet pointer with the first one of the DMARxDescTab list */
+    DMARxDescToGet = DMARxDescTab;
+    /* Fill each DMARxDesc descriptor with the right values */
+    for(i=0; i < RxBuffCount; i++)
+    {
+        /* Get the pointer on the ith member of the Rx Desc list */
+        DMARxDesc = DMARxDescTab+i;
+        /* Set Own bit of the Rx descriptor Status */
+        DMARxDesc->Status = ETH_DMARxDesc_OWN;
+
+        /* Set Buffer1 size and Second Address Chained bit */
+        DMARxDesc->ControlBufferSize = ETH_DMARxDesc_RCH | (uint32_t)ETH_RX_BUF_SIZE;
+        /* Set Buffer1 address pointer */
+        DMARxDesc->Buffer1Addr = (uint32_t)(&RxBuff[i*ETH_RX_BUF_SIZE]);
+
+        /* Initialize the next descriptor with the Next Descriptor Polling Enable */
+        if(i < (RxBuffCount-1))
+        {
+        /* Set next descriptor address register with next descriptor base address */
+        DMARxDesc->Buffer2NextDescAddr = (uint32_t)(DMARxDescTab+i+1);
+        }
+        else
+        {
+        /* For last descriptor, set next descriptor address register equal to the first descriptor base address */
+        DMARxDesc->Buffer2NextDescAddr = (uint32_t)(DMARxDescTab);
+        }
+    }
+
+    /* Set Receive Descriptor List Address Register */
+    ETH->DMARDLAR = (uint32_t) DMARxDescTab;
+
+    DMA_RX_FRAME_infos = &RX_Frame_Descriptor;
+}
