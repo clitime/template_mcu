@@ -48,9 +48,9 @@
 void sys_arch_msleep(u32_t delay_ms);
 #define sys_msleep(ms) sys_arch_msleep(ms)
 
-#if SYS_LIGHTWEIGHT_PROT
-typedef u32_t sys_prot_t;
-#endif /* SYS_LIGHTWEIGHT_PROT */
+// #if SYS_LIGHTWEIGHT_PROT
+// typedef u32_t sys_prot_t;
+// #endif /* SYS_LIGHTWEIGHT_PROT */
 
 #if !LWIP_COMPAT_MUTEX
 struct _sys_mut {

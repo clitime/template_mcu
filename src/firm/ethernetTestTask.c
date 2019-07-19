@@ -14,16 +14,30 @@
 
 
 #include "physics.h"
+#include "ethernetif.h"
 
-static xSemaphoreHandle phyIRQSemaphore = NULL;
-uint32_t linkStatus = 0;
+Ethernet_t eth = {
+    {192, 168, 70, 212},
+    {255, 255, 255, 0},
+    {192, 168, 70, 254}
+};
 
 
 void ethernetTask(void *p) {
     (void)p;
 
-
+    lwipInit(&eth);
     for (;;) {
 
+    }
+}
+
+
+const uint8_t default_hw_param[6] = {0x00, 0x1f, 0x62, 0x00, 0x00, 0x33};
+
+
+void setMACHwAddr(uint8_t *hw, uint8_t len) {
+    for (uint8_t i = 0; i != len; i++) {
+        hw[i] = default_hw_param[i];
     }
 }

@@ -1,11 +1,11 @@
 #ifndef __LWIPOPTS__H__
 #define __LWIPOPTS__H__
 
-#if defined (__GNUC__)
-	#define LWIP_TIMEVAL_PRIVATE 0
-#else
-	#define LWIP_TIMEVAL_PRIVATE 1
-#endif
+// #if defined (__GNUC__)
+// 	#define LWIP_TIMEVAL_PRIVATE 0
+// #else
+// 	#define LWIP_TIMEVAL_PRIVATE 1
+// #endif
 
 /**
  * The number of sys timeouts used by the core stack (not apps)
@@ -55,7 +55,6 @@
  */
 #define SYS_LIGHTWEIGHT_PROT    1
 
-#define LWIP_SOCKET_SET_ERRNO 1
 // ---------- Memory options ----------
 /**
  * MEM_ALIGNMENT: should be set to the alignment of the CPU
@@ -266,16 +265,16 @@
 #define LWIP_SOCKET                     1
 
 // ---------- DEBUG options ----------
-#define LWIP_DEBUG                      0
+#define LWIP_DEBUG                      1
 
 #define TCP_RST_DEBUG           LWIP_DBG_OFF
-#define MEM_DEBUG 				LWIP_DBG_OFF
-#define PBUF_DEBUG              LWIP_DBG_OFF
+#define MEM_DEBUG 				LWIP_DBG_ON
+#define PBUF_DEBUG              LWIP_DBG_ON
 #define API_LIB_DEBUG           LWIP_DBG_OFF
-#define SOCKETS_DEBUG           LWIP_DBG_OFF
+#define SOCKETS_DEBUG           LWIP_DBG_ON
 #define UDP_DEBUG               LWIP_DBG_OFF
-#define IP_DEBUG	LWIP_DBG_OFF
-#define ICMP_DEBUG	LWIP_DBG_ON
+#define IP_DEBUG				LWIP_DBG_OFF
+#define ICMP_DEBUG				LWIP_DBG_ON
 // ---------- Statistics options ----------
 #define LWIP_STATS 							1
 
@@ -291,6 +290,7 @@
 	#define IP_STATS								1
 #endif
 
+#include "FreeRTOSConfig.h"
 // ---------- OS options ----------
 #define TCPIP_THREAD_STACKSIZE          1024
 #define TCPIP_MBOX_SIZE                 20

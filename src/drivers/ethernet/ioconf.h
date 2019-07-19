@@ -3,6 +3,7 @@
 
 
 void ETH_ConfigIO(void);
+void ETH_NVIC_Config(void);
 
 
 #endif

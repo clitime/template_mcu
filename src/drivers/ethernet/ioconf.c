@@ -1,5 +1,6 @@
 #include "ioconf.h"
 
+#include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_exti.h"
 #include "stm32f4xx_rcc.h"
@@ -59,4 +60,18 @@ void ETH_ConfigIO(void) {
     #undef XX
 
     RCC_MCO1Config(RCC_MCO1Source_HSE, RCC_MCO1Div_1);
+}
+
+
+void ETH_NVIC_Config(void) {
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    /* Enable the Ethernet global Interrupt */
+    NVIC_InitStructure.NVIC_IRQChannel = ETH_IRQn;
+
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;	//priority more then 6 (5 highest)
+
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
 }
