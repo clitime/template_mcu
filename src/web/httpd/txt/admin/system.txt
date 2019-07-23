@@ -1,0 +1,3 @@
+<div>
+	<input type="button" id="id_boot" class="width50" value="Перейти в загрузчик" onclick="goToBoot(); return false;"/>
+</div>

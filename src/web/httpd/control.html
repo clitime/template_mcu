@@ -1,0 +1,53 @@
+<!DOCTYPE html">
+<html>
+
+<head>
+	<title>Б-419</title>
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="stylesheet" href="style.css">
+	<script src="/js/control.js"></script>
+	<meta charset="utf-8">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Cache-Control" content="must-revalidate">
+	<meta http-equiv="Cache-Control" content="no-store">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="-1">
+</head>
+
+<body onLoad="BoL()">
+	<div class="application">
+		<div class="width100">
+			<div class="img"><a href="http://stilsoft.ru/"><img src="/img/stilsoft.gif" alt="Stilsoft" /></a></div>
+			<div class="base">
+				<div class="title_left"><a href="/index.html" id="info">Вернуться на главную</a></div>
+				<div class="title"><a href="/control.html" id="info">Управление контроллером</a></div>
+				<div class="title_right"><a href="/index.html" id="info">Контроллер Б-419</a></div>
+			</div>
+		</div>
+		<p class="error" id="iderror">
+			<b>ПРЕДУПРЕЖДЕНИЕ:</b> Не поддерживается Internet Explorer. Используйте для работы Google Chrome или Mozilla FireFox</p>
+		<div class="base">
+			<div class="left-bar" id="main-menu">
+				<a href="#!/controlsensors" id="menu_0" onclick="link_menu('controlsensors'); return false;">Постановка на охрану/Снятие с охраны</a>
+				<a href="#!/servisemode" id="menu_1" onclick="link_menu('servisemode'); return false;">Сервисный режим</a>
+			</div>
+			
+			<div class="width100">
+				<div class="error" id="mac_state">
+					ВНИМАНИЕ: MAC адрес не задан. Требуется задать MAC адрес. <a href="#!/hw" id="menu_net1" onclick="link_menu('hw'); return false;">Настройка MAC адреса.</a>
+				</div>
+				<div id="content" class="content">
+					<h1>Информация</h1>
+					<h3>Назначение</h3>
+					<p text-align="justify">А здесь должна быть какая-то информация</p>
+				</div>
+			</div>
+		</div>				
+		<div id="version" class="footer">Версия ПО:</div>
+		<footer class="footer">
+			&copy; 2018 <a href="http://stilsoft.ru/">ГК "Стилсофт".</a> Все права защищены.
+		</footer>
+	</div>
+</body>
+
+</html>

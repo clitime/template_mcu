@@ -1,0 +1,12 @@
+<form name="form_choice">
+	<fieldset>
+		<div>
+			<label>Новая прошивка:</label>
+			<td><input type="button" value="Загрузить" class="button" onClick="link_menu('upload')">
+		</div>
+		<div>
+			<label>Текущая прошивка:</label>
+			<td><input type="button" value="Вход" class="button" onClick="getCurrentFirm()">
+		</div>	
+	</fieldset>
+</form>

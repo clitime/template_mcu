@@ -1,0 +1,31 @@
+<h3>Конфигурация датчиков</h3>
+
+
+<a class="show_popup" rel="reg_form" href="#" onclick="showPopUp()">Добавить датчик</a><p></p>
+
+
+
+
+<div class="popup reg_form" id="popup_a">
+	<a class="close" href="#" onclick="hidePopUp()">Close</a>
+	<p></p>
+	<input id="hiden_in" hidden>
+
+	<div>
+		<div class="fieldset_div">
+			<label id="id_out_t_ctrl_lb1" for="id_out_t_ctrl1" class='width65'>Код:</label>
+			<input class='width35' id="id_out_t_ctrl1" type='number' name="minAmpl_2" autocomplete="off" value="" />
+		</div>
+		<div class="fieldset_div">
+			<label id="id_out_t_period_lb1" for="id_out_t_period1" class='width65'>Раздел</label>
+			<input class='width35' id="id_out_t_period1" type='number' min='0' max='7000' step='1' name="minAmpl_2" autocomplete="off" value="" />
+		</div>
+		<select class="width50" name="mode" id="id_out_s1" size="1" onchange="handlerOtherState(id_out_s1, id_out1, callbackConfigOutput)">
+				<option value="s1">Взять под охрану</option>
+				<option value="s2">Снять с охраны</option>
+				<option selected value="s3">Переключить состояние</option>
+			</select>
+	</div>
+
+	<button type="button" onclick="insertSensor()">Добавить датчики</button>
+</div>

@@ -136,7 +136,7 @@ static void linkStatusCallback(struct netif *netif) {
     } else {
         ETH_Stop();
         ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, DISABLE);
-	    ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, DISABLE);
+      ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, DISABLE);
         tcpip_callback((tcpip_callback_fn)netif_set_down, &xnetif);
     }
 }
@@ -144,7 +144,7 @@ static void linkStatusCallback(struct netif *netif) {
 
 static void linkStatus(void *args) {
     (void)args;
-
+    netif_set_link_up(&xnetif);
     for (;;) {
         xSemaphoreTake(phyIRQSemaphore, portMAX_DELAY);
         switch(PHY_getCauseIRQ()) {
@@ -226,106 +226,59 @@ static void lowLevelInit(struct netif *netif) {
  */
 
 static err_t low_level_output(struct netif *netif, struct pbuf *p) {
-//     struct pbuf *q;
+    struct pbuf *q;
+    __IO ETH_DMADESCTypeDef *DmaTxDesc = getDMATxDescToSet();
+    err_t errval;
+    u8 *buffer = (u8 *)(DmaTxDesc->Buffer1Addr);
+    uint32_t framelen = 0U;
 
-//     initiate transfer();
+    if (p->tot_len > ETH_MAX_PACKET_SIZE) {
+        return ERR_BUF;
+    }
 
-// #if ETH_PAD_SIZE
-//     pbuf_remove_header(p, ETH_PAD_SIZE); /* drop the padding word */
-// #endif
-
-//     for (q = p; q != NULL; q = q->next) {
-//         /* Send the data from the pbuf to the interface, one pbuf at a
-//              time. The size of the data in each pbuf is kept in the ->len
-//              variable. */
-//         send data from(q->payload, q->len);
-//     }
-
-//     signal that packet should be sent();
-
-//     MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p->tot_len);
-//     if (((u8_t *)p->payload)[0] & 1) {
-//         /* broadcast or multicast packet*/
-//         MIB2_STATS_NETIF_INC(netif, ifoutnucastpkts);
-//     } else {
-//         /* unicast packet */
-//         MIB2_STATS_NETIF_INC(netif, ifoutucastpkts);
-//     }
-//     /* increase ifoutdiscards or ifouterrors on error */
-
-// #if ETH_PAD_SIZE
-//     pbuf_add_header(p, ETH_PAD_SIZE); /* reclaim the padding word */
-// #endif
-
-//     LINK_STATS_INC(link.xmit);
-
-//     return ERR_OK;
-
-  struct pbuf *q;
-  __IO ETH_DMADESCTypeDef *DmaTxDesc = getDMATxDescToSet();
-  u8 *buffer = (u8 *)(DmaTxDesc->Buffer1Addr);
-  uint16_t framelength = 0;
-  uint32_t bufferoffset = 0;
-  uint32_t byteslefttocopy = 0;
-  uint32_t payloadoffset = 0;
-  err_t errval;
-
-  for(q = p; q != NULL; q = q->next)
-	{
     if((DmaTxDesc->Status & ETH_DMATxDesc_OWN) != (u32)RESET)
     {
       errval = ERR_USE;
       goto error;
     }
-    //Get bytes in current lwIP buffer
-    byteslefttocopy = q->len;
-    payloadoffset = 0;
-    //Check if the length of data to copy is bigger than Tx buffer size
-    while( (byteslefttocopy + bufferoffset) > ETH_TX_BUF_SIZE )
-    {
-      //Copy data to Tx buffer
-      memcpy( (u8_t*)((u8_t*)buffer + bufferoffset), (u8_t*)((u8_t*)q->payload + payloadoffset), (ETH_TX_BUF_SIZE - bufferoffset) );
-      //Point to next descriptor
-      DmaTxDesc = (ETH_DMADESCTypeDef *)(DmaTxDesc->Buffer2NextDescAddr);
-      //Check if the buffer is available
-      if((DmaTxDesc->Status & ETH_DMATxDesc_OWN) != (u32)RESET)
-      {
-        errval = ERR_USE;
-        goto error;
-      }
 
-      buffer = (u8 *)(DmaTxDesc->Buffer1Addr);
-      byteslefttocopy = byteslefttocopy - (ETH_TX_BUF_SIZE - bufferoffset);
-      payloadoffset = payloadoffset + (ETH_TX_BUF_SIZE - bufferoffset);
-      framelength = framelength + (ETH_TX_BUF_SIZE - bufferoffset);
-      bufferoffset = 0;
+
+    for (q = p; q != NULL; q = q->next) {
+        /* Send the data from the pbuf to the interface, one pbuf at a
+             time. The size of the data in each pbuf is kept in the ->len
+             variable. */
+        memcpy(buffer, q->payload, q->len);
+        framelen += (uint32_t)q->len;
+        buffer += q->len;
     }
-    //Copy the remaining bytes
-    memcpy( (u8_t*)((u8_t*)buffer + bufferoffset), (u8_t*)((u8_t*)q->payload + payloadoffset), byteslefttocopy );
-    bufferoffset = bufferoffset + byteslefttocopy;
-    framelength = framelength + byteslefttocopy;
-	}
-  //Prepare transmit descriptors to give to DMA
-  if(!ETH_Prepare_Transmit_Descriptors(framelength))
-  {
-    errval = ERR_USE;
-  }
-  else
-  {
-    errval = ERR_OK;
-  }
 
+    //Prepare transmit descriptors to give to DMA
+    if(!ETH_Prepare_Transmit_Descriptors(framelen)) {
+        errval = ERR_USE;
+    } else {
+        errval = ERR_OK;
+    }
+
+    MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p->tot_len);
+    if (((u8_t *)p->payload)[0] & 1) {
+        /* broadcast or multicast packet*/
+        MIB2_STATS_NETIF_INC(netif, ifoutnucastpkts);
+    } else {
+        /* unicast packet */
+        MIB2_STATS_NETIF_INC(netif, ifoutucastpkts);
+    }
+    /* increase ifoutdiscards or ifouterrors on error */
 error:
   //may be need clear flag ETH_DMASR_TUS if set
-  if ((ETH->DMASR & ETH_DMASR_TUS) != (u32)RESET)
-	{
-    //Clear TUS ETHERNET DMA flag
-    ETH->DMASR = ETH_DMASR_TUS;
-    //Resume DMA transmission
-    ETH->DMATPDR = 0;
-	}
+    if ((ETH->DMASR & ETH_DMASR_TUS) != (u32)RESET) {
+        //Clear TUS ETHERNET DMA flag
+        ETH->DMASR = ETH_DMASR_TUS;
+        //Resume DMA transmission
+        ETH->DMATPDR = 0;
+    }
+    LINK_STATS_INC(link.xmit);
 
-  return errval;
+    return errval;
 }
 
 
@@ -333,7 +286,7 @@ error:
     do {                                                                    \
         for (uint32_t i = 0; i < DMA_RX_FRAME_infos->Seg_Count; i++) {      \
             ETH_SetDMARxDescOwnBit(DMARxDesc);                              \
-            ETH_setNextDMADescriptor(DMARxDesc);                            \
+            DMARxDesc = ETH_setNextDMADescriptor(DMARxDesc);                            \
         }                                                                   \
         DMA_RX_FRAME_infos->Seg_Count = 0;                                  \
     } while(0)
@@ -348,138 +301,67 @@ error:
  */
 extern __IO ETH_DMA_Rx_Frame_infos *DMA_RX_FRAME_infos;
 static struct pbuf *low_level_input(struct netif *netif) {
-    // struct pbuf *p = NULL, *q = NULL;
-    // FrameTypeDef frame = ETH_Get_Received_Frame_interrupt();
-    // uint16_t len = frame.length;
+    struct pbuf *p = NULL, *q = NULL;
+    FrameTypeDef frame = ETH_Get_Received_Frame_interrupt();
+    uint16_t len = frame.length;
 
-    // __IO ETH_DMADESCTypeDef *DMARxDesc = frame.descriptor;
+    __IO ETH_DMADESCTypeDef *DMARxDesc = frame.descriptor;
 
-    // if (len == 0 || len > ETH_MAX_PACKET_SIZE) {
-    //     setOwnAndGivesBuffersBack(DMARxDesc, getFrameInfos());
-    //     LINK_STATS_INC(link.memerr);
-    //     LINK_STATS_INC(link.drop);
-    //     MIB2_STATS_NETIF_INC(netif, ifindiscards);
-    //     return p;
-    // }
-
-    // p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
-
-    // if (p == NULL) {
-    //     setOwnAndGivesBuffersBack(DMARxDesc, getFrameInfos());
-    //     LINK_STATS_INC(link.memerr);
-    //     LINK_STATS_INC(link.drop);
-    //     MIB2_STATS_NETIF_INC(netif, ifindiscards);
-    //     return p;
-    // }
-
-    // len = 0U;
-    // uint8_t *buffer = (uint8_t *)frame.buffer;
-    // /* We iterate over the pbuf chain until we have read the entire
-    //     * packet into the pbuf. */
-    // for (q = p; q != NULL; q = q->next) {
-    //     /* Read enough bytes to fill this pbuf in the chain. The
-    //      * available data in the pbuf is given by the q->len
-    //      * variable.
-    //      * This does not necessarily have to be a memcpy, you can also preallocate
-    //      * pbufs for a DMA-enabled MAC and after receiving truncate it to the
-    //      * actually received size. In this case, ensure the tot_len member of the
-    //      * pbuf is the sum of the chained pbuf len members.
-    //      */
-    //     memcpy(q->payload, &buffer[len], q->len);
-    //     len += q->len;
-    // }
-    // setOwnAndGivesBuffersBack(DMARxDesc, getFrameInfos());
-
-    // MIB2_STATS_NETIF_ADD(netif, ifinoctets, p->tot_len);
-    // if (((u8_t *)p->payload)[0] & 1) {
-    //     /* broadcast or multicast packet*/
-    //     MIB2_STATS_NETIF_INC(netif, ifinnucastpkts);
-    // } else {
-    //     /* unicast packet*/
-    //     MIB2_STATS_NETIF_INC(netif, ifinucastpkts);
-    // }
-
-    // LINK_STATS_INC(link.recv);
-    //  //When Rx Buffer unavailable flag is set: clear it and resume reception
-    // if ((ETH->DMASR & ETH_DMASR_RBUS) != (u32)RESET) {
-    //     //Clear RBUS ETHERNET DMA flag
-    //     ETH->DMASR = ETH_DMASR_RBUS;
-    //     //Resume DMA reception
-    //     ETH->DMARPDR = 0;
-    // }
-    // return p;
-
-
-    struct pbuf *p= NULL, *q;
-  u32_t len;
-  FrameTypeDef frame;
-  u8 *buffer;
-  __IO ETH_DMADESCTypeDef *DMARxDesc;
-  uint32_t bufferoffset = 0;
-  uint32_t payloadoffset = 0;
-  uint32_t byteslefttocopy = 0;
-  uint32_t i=0;
-
-#if !NO_SYS
-  //get received frame
-  frame = ETH_Get_Received_Frame_interrupt();
-#else
-  frame = ETH_Get_Received_Frame();
-#endif
-
-  //Obtain the size of the packet and put it into the "len" variable.
-  len = frame.length;
-  buffer = (u8 *)frame.buffer;
-  //We allocate a pbuf chain of pbufs from the Lwip buffer pool
-  if (len > 0)
-  {
-    p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
-  }
-
-  if (p != NULL)
-  {
-    DMARxDesc = frame.descriptor;
-    bufferoffset = 0;
-    for(q = p; q != NULL; q = q->next)
-    {
-      byteslefttocopy = q->len;
-      payloadoffset = 0;
-      //Check if the length of bytes to copy in current pbuf is bigger than Rx buffer size
-      while( (byteslefttocopy + bufferoffset) > ETH_RX_BUF_SIZE )
-      {
-        //Copy data to pbuf
-        memcpy( (u8_t*)((u8_t*)q->payload + payloadoffset), (u8_t*)((u8_t*)buffer + bufferoffset), (ETH_RX_BUF_SIZE - bufferoffset));
-        //Point to next descriptor
-        DMARxDesc = (ETH_DMADESCTypeDef *)(DMARxDesc->Buffer2NextDescAddr);
-        buffer = (unsigned char *)(DMARxDesc->Buffer1Addr);
-        byteslefttocopy = byteslefttocopy - (ETH_RX_BUF_SIZE - bufferoffset);
-        payloadoffset = payloadoffset + (ETH_RX_BUF_SIZE - bufferoffset);
-        bufferoffset = 0;
-      }
-      //Copy remaining data in pbuf
-      memcpy( (u8_t*)((u8_t*)q->payload + payloadoffset), (u8_t*)((u8_t*)buffer + bufferoffset), byteslefttocopy);
-      bufferoffset = bufferoffset + byteslefttocopy;
+    if (len == 0 || len > ETH_MAX_PACKET_SIZE) {
+        setOwnAndGivesBuffersBack(DMARxDesc, getFrameInfos());
+        LINK_STATS_INC(link.memerr);
+        LINK_STATS_INC(link.drop);
+        MIB2_STATS_NETIF_INC(netif, ifindiscards);
+        return p;
     }
-    //Release descriptors to DMA
-    DMARxDesc =frame.descriptor;
-    //Set Own bit in Rx descriptors: gives the buffers back to DMA
-    for (i=0; i<DMA_RX_FRAME_infos->Seg_Count; i++)
-		{
-      DMARxDesc->Status = ETH_DMARxDesc_OWN;
-      DMARxDesc = (ETH_DMADESCTypeDef *)(DMARxDesc->Buffer2NextDescAddr);
-		}
-    //Clear Segment_Count
-    DMA_RX_FRAME_infos->Seg_Count =0;
-  }
-  //When Rx Buffer unavailable flag is set: clear it and resume reception
-  if ((ETH->DMASR & ETH_DMASR_RBUS) != (u32)RESET)
-  {
-    //Clear RBUS ETHERNET DMA flag
-    ETH->DMASR = ETH_DMASR_RBUS;
-    //Resume DMA reception
-    ETH->DMARPDR = 0;
-  }
-  return p;
+
+    p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
+
+    if (p == NULL) {
+        setOwnAndGivesBuffersBack(DMARxDesc, getFrameInfos());
+        LINK_STATS_INC(link.memerr);
+        LINK_STATS_INC(link.drop);
+        MIB2_STATS_NETIF_INC(netif, ifindiscards);
+        return p;
+    }
+
+    len = 0U;
+    uint8_t *buffer = (uint8_t *)frame.buffer;
+    /* We iterate over the pbuf chain until we have read the entire
+        * packet into the pbuf. */
+    for (q = p; q != NULL; q = q->next) {
+        /* Read enough bytes to fill this pbuf in the chain. The
+         * available data in the pbuf is given by the q->len
+         * variable.
+         * This does not necessarily have to be a memcpy, you can also preallocate
+         * pbufs for a DMA-enabled MAC and after receiving truncate it to the
+         * actually received size. In this case, ensure the tot_len member of the
+         * pbuf is the sum of the chained pbuf len members.
+         */
+        memcpy(q->payload, buffer, q->len);
+        len += q->len;
+        buffer += q->len;
+    }
+    setOwnAndGivesBuffersBack(DMARxDesc, getFrameInfos());
+
+    MIB2_STATS_NETIF_ADD(netif, ifinoctets, p->tot_len);
+    if (((u8_t *)p->payload)[0] & 1) {
+        /* broadcast or multicast packet*/
+        MIB2_STATS_NETIF_INC(netif, ifinnucastpkts);
+    } else {
+        /* unicast packet*/
+        MIB2_STATS_NETIF_INC(netif, ifinucastpkts);
+    }
+
+    LINK_STATS_INC(link.recv);
+     //When Rx Buffer unavailable flag is set: clear it and resume reception
+    if ((ETH->DMASR & ETH_DMASR_RBUS) != (u32)RESET) {
+        //Clear RBUS ETHERNET DMA flag
+        ETH->DMASR = ETH_DMASR_RBUS;
+        //Resume DMA reception
+        ETH->DMARPDR = 0;
+    }
+    return p;
 }
 
 /**
@@ -499,6 +381,8 @@ static void ethifInput(void *arg) {
     for (;;) {
         xSemaphoreTake(ethifInputSemaphore, portMAX_DELAY);
 
+        ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, DISABLE);
+        ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, DISABLE);
         while ((p = low_level_input(netif)) != NULL) {
             ethhdr = p->payload;
             switch (htons(ethhdr->type))
@@ -515,6 +399,8 @@ static void ethifInput(void *arg) {
                 break;
             }
         }
+        ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, ENABLE);
+        ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, ENABLE);
     }
 }
 
@@ -549,9 +435,9 @@ static err_t ethifInitialize(struct netif *netif) {
     /* initialize the hardware */
     lowLevelInit(netif);
 
-    netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP;// | NETIF_FLAG_LINK_UP;
+    netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP;
 
-    xTaskCreate(ethifInput, "ethernetif", configMINIMAL_STACK_SIZE * 3, NULL, configMAX_PRIORITIES - 2, NULL);
+    xTaskCreate(ethifInput, "ethernetif", configMINIMAL_STACK_SIZE * 3, netif, configMAX_PRIORITIES - 2, NULL);
 
     netif_set_link_callback(netif, linkStatusCallback);
     xTaskCreate(linkStatus, "linkStatus", configMINIMAL_STACK_SIZE * 1, NULL, MAIN_TASK_PRIO, NULL);

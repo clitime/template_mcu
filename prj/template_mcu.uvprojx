@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx,DEBUG_PORT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug;..\src\drivers\ethernet;..\src\drivers\lwip;..\src\drivers\lwip\include;..\src\drivers\lwip\include\arch;..\lib\lwip\src\include;..\lib\lwip\src\include\lwip;..\lib\lwip\src\include\lwip\priv;..\lib\lwip\src\include\lwip\prot;..\lib\lwip\src\include\netif</IncludePath>
+              <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug;..\src\drivers\ethernet;..\src\drivers\lwip;..\src\drivers\lwip\include;..\src\drivers\lwip\include\arch;..\lib\lwip\src\include;..\lib\lwip\src\include\lwip;..\lib\lwip\src\include\lwip\priv;..\lib\lwip\src\include\lwip\prot;..\lib\lwip\src\include\netif;..\src\web</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -440,7 +440,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>stc/firm</GroupName>
+          <GroupName>src/firm</GroupName>
           <Files>
             <File>
               <FileName>main.c</FileName>
@@ -456,6 +456,11 @@
               <FileName>ethernetTestTask.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\firm\ethernetTestTask.c</FilePath>
+            </File>
+            <File>
+              <FileName>webStatic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\firm\webStatic.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -756,6 +761,36 @@
               <FileName>sys_arch.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\drivers\lwip\sys_arch.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>src/web</GroupName>
+          <Files>
+            <File>
+              <FileName>fs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\web\fs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fsdata.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\web\fsdata.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\web\http_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\web\http_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>httpParser.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\web\httpParser.c</FilePath>
             </File>
           </Files>
         </Group>

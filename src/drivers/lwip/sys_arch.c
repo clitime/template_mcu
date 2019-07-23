@@ -47,14 +47,14 @@ int errno;
  * Default is that they are interpreted as byte count (lwIP-like).
  */
 #ifndef LWIP_FREERTOS_THREAD_STACKSIZE_IS_STACKWORDS
-#define LWIP_FREERTOS_THREAD_STACKSIZE_IS_STACKWORDS  0
+#define LWIP_FREERTOS_THREAD_STACKSIZE_IS_STACKWORDS  1
 #endif
 
 /** Set this to 1 to use a mutex for SYS_ARCH_PROTECT() critical regions.
  * Default is 0 and locks interrupts/scheduler for SYS_ARCH_PROTECT().
  */
 #ifndef LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
-#define LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX     0
+#define LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX     1
 #endif
 
 /** Set this to 1 to include a sanity check that SYS_ARCH_PROTECT() and
@@ -66,7 +66,7 @@ int errno;
 
 /** Set this to 1 to let sys_mbox_free check that queues are empty when freed */
 #ifndef LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE
-#define LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE       0
+#define LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE       1
 #endif
 
 /** Set this to 1 to enable core locking check functions in this port.
@@ -292,6 +292,9 @@ void sys_sem_free(sys_sem_t *sem) {
     LWIP_ASSERT("sem->sem != NULL", sem->sem != NULL);
 
     SYS_STATS_DEC(sem.used);
+    if (sem->sem == NULL) {
+        return;
+    }
     vSemaphoreDelete(sem->sem);
     sem->sem = NULL;
 }

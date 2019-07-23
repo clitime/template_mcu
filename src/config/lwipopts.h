@@ -35,8 +35,8 @@
  * LWIP_SO_RCVTIMEO==1: Enable receive timeout for sockets/netconns and
  * SO_RCVTIMEO processing.
  */
-#define LWIP_SO_RCVTIMEO            1
-#define LWIP_TCP_KEEPALIVE          1 	//need for keepalive RTSP session
+#define LWIP_SO_RCVTIMEO            0
+#define LWIP_TCP_KEEPALIVE          0 	//need for keepalive RTSP session
 /**
  * LWIP_SO_SNDRCVTIMEO_NONSTANDARD==1: SO_RCVTIMEO/SO_SNDTIMEO take an int
  * (milliseconds, much like winsock does) instead of a struct timeval (default).
@@ -61,12 +61,12 @@
  *    4 byte alignment -> \#define MEM_ALIGNMENT 4
  *    2 byte alignment -> \#define MEM_ALIGNMENT 2
  */
-#define MEM_ALIGNMENT           4
+#define MEM_ALIGNMENT           4U
 /**
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
  */
-#define MEM_SIZE                (12*1024)
+#define MEM_SIZE                (16*1024)
 /**
  * MEMP_OVERFLOW_CHECK: memp overflow protection reserves a configurable
  * amount of bytes before and after each memp element in every pool and fills
@@ -87,12 +87,12 @@
  * The default number of timeouts is calculated here for all enabled modules.
  * The formula expects settings to be either '0' or '1'.
  */
-#define MEMP_NUM_SYS_TIMEOUT            5
+#define MEMP_NUM_SYS_TIMEOUT            17
 /**
  * MEMP_NUM_NETBUF: the number of struct netbufs.
  * (only needed if you use the sequential API, like api_lib.c)
  */
-#define MEMP_NUM_NETBUF                 8
+#define MEMP_NUM_NETBUF                 4
 /**
  * MEMP_NUM_NETCONN: the number of struct netconns.
  * (only needed if you use the sequential API, like api_lib.c)
@@ -101,7 +101,7 @@
 /**
  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool.
  */
-#define PBUF_POOL_SIZE                  32
+#define PBUF_POOL_SIZE                  16
 /*
 	 ------------------------------------------------
 	 ---------- Internal Memory Pool Sizes ----------
@@ -112,12 +112,12 @@
  * If the application sends a lot of data out of ROM (or other static memory),
  * this should be set high.
  */
-#define MEMP_NUM_PBUF           20
+#define MEMP_NUM_PBUF           16
 /**
  * MEMP_NUM_RAW_PCB: Number of raw connection PCBs
  * (requires the LWIP_RAW option)
  */
-#define MEMP_NUM_RAW_PCB                4
+#define MEMP_NUM_RAW_PCB                3
 /**
  * MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
  * per active UDP "connection".
@@ -128,7 +128,7 @@
  * MEMP_NUM_TCP_PCB: the number of simultaneously active TCP connections.
  * (requires the LWIP_TCP option)
  */
-#define MEMP_NUM_TCP_PCB                5
+#define MEMP_NUM_TCP_PCB                10
 /**
  * MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP connections.
  * (requires the LWIP_TCP option)
@@ -144,7 +144,7 @@
  * for incoming packets.
  * (only needed if you use tcpip.c)
  */
-#define MEMP_NUM_TCPIP_MSG_INPKT        8
+#define MEMP_NUM_TCPIP_MSG_INPKT        16
 /**
  * MEMP_NUM_FRAG_PBUF: the number of IP fragments simultaneously sent
  * (fragments, not whole packets!).
@@ -153,6 +153,10 @@
  * returns.
  */
 #define MEMP_NUM_FRAG_PBUF              15
+/* MEMP_NUM_TCPIP_MSG_*: the number of struct tcpip_msg, which is used
+   for sequential API communication and incoming packets. Used in
+   src/api/tcpip.c. */
+#define MEMP_NUM_TCPIP_MSG_API   16
 /*
 	 ------------------------------------------------
 	 ---------- Internal Memory Pool Sizes ----------
@@ -165,7 +169,7 @@
  * with scaling applied. Maximum window value in the TCP header
  * will be TCP_WND >> TCP_RCV_SCALE
  */
-#define TCP_WND                         (4 * TCP_MSS)
+#define TCP_WND                         (2 * TCP_MSS)
 /**
  * TCP_MSS: TCP Maximum segment size. (default is 536, a conservative default,
  * you might want to increase this.)
@@ -173,22 +177,30 @@
  * when opening a connection. For the transmit size, this MSS sets
  * an upper limit on the MSS advertised by the remote host.
  */
-#define TCP_MSS                         1400
+#define TCP_MSS                         1024
 /**
  * TCP_SND_BUF: TCP sender buffer space (bytes).
  * To achieve good performance, this should be at least 2 * TCP_MSS.
  */
-#define TCP_SND_BUF                     (2 * TCP_MSS)
+#define TCP_SND_BUF                     (3 * TCP_MSS)
 /**
  * TCP_SND_QUEUELEN: TCP sender buffer space (pbufs). This must be at least
  * as much as (2 * TCP_SND_BUF/TCP_MSS) for things to work.
  */
-#define TCP_SND_QUEUELEN                ((4 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
+#define TCP_SND_QUEUELEN                (4 * TCP_SND_BUF/TCP_MSS)//((4 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
+/* TCP writable space (bytes). This must be less than or equal
+   to TCP_SND_BUF. It is the amount of space which must be
+   available in the tcp snd_buf for select to return writable */
+#define TCP_SNDLOWAT           (TCP_SND_BUF/2)
 /**
  * TCP_LISTEN_BACKLOG: Enable the backlog option for tcp listen pcb.
  */
-#define TCP_LISTEN_BACKLOG      1
+#define TCP_LISTEN_BACKLOG      5
+/* Maximum number of retransmissions of data segments. */
+#define TCP_MAXRTX              12
 
+/* Maximum number of retransmissions of SYN segments. */
+#define TCP_SYNMAXRTX           4
 
 /**
  * PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. The default is
@@ -209,11 +221,18 @@
 #define LWIP_DHCP               0
 
 // ---------- UDP options ----------
-#define LWIP_UDP                1
+#define LWIP_UDP                0
 #define UDP_TTL                 255
 
 #define LWIP_IGMP				0
 
+#define LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT 10000
+/* IP reassembly and segmentation.These are orthogonal even
+ * if they both deal with IP fragments */
+#define IP_REASSEMBLY           1
+#define IP_REASS_MAX_PBUFS      (10 * ((1500 + PBUF_POOL_BUFSIZE - 1) / PBUF_POOL_BUFSIZE))
+#define MEMP_NUM_REASSDATA      IP_REASS_MAX_PBUFS
+#define IP_FRAG                 1
 
 // ---------- Checksum options ----------
 //The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums by hardware:
@@ -267,14 +286,16 @@
 // ---------- DEBUG options ----------
 #define LWIP_DEBUG                      1
 
-#define TCP_RST_DEBUG           LWIP_DBG_OFF
-#define MEM_DEBUG 				LWIP_DBG_ON
-#define PBUF_DEBUG              LWIP_DBG_ON
-#define API_LIB_DEBUG           LWIP_DBG_OFF
-#define SOCKETS_DEBUG           LWIP_DBG_ON
-#define UDP_DEBUG               LWIP_DBG_OFF
-#define IP_DEBUG				LWIP_DBG_OFF
-#define ICMP_DEBUG				LWIP_DBG_ON
+#define TCP_RST_DEBUG           		LWIP_DBG_OFF
+#define MEM_DEBUG 						LWIP_DBG_OFF
+#define PBUF_DEBUG              		LWIP_DBG_OFF
+#define API_LIB_DEBUG           		LWIP_DBG_OFF
+#define SOCKETS_DEBUG           		LWIP_DBG_OFF
+#define UDP_DEBUG               		LWIP_DBG_OFF
+#define IP_DEBUG						LWIP_DBG_OFF
+#define TCP_DEBUG               		LWIP_DBG_OFF
+#define ICMP_DEBUG						LWIP_DBG_OFF
+#define NETIF_DEBUG                     LWIP_DBG_OFF
 // ---------- Statistics options ----------
 #define LWIP_STATS 							1
 
@@ -293,10 +314,10 @@
 #include "FreeRTOSConfig.h"
 // ---------- OS options ----------
 #define TCPIP_THREAD_STACKSIZE          1024
-#define TCPIP_MBOX_SIZE                 20
+#define TCPIP_MBOX_SIZE                 30
 #define DEFAULT_UDP_RECVMBOX_SIZE       50
-#define DEFAULT_TCP_RECVMBOX_SIZE       20
-#define DEFAULT_ACCEPTMBOX_SIZE         10
+#define DEFAULT_TCP_RECVMBOX_SIZE       30
+#define DEFAULT_ACCEPTMBOX_SIZE         30
 #define DEFAULT_THREAD_STACKSIZE        1024
 #define TCPIP_THREAD_PRIO               (configMAX_PRIORITIES - 3)
 

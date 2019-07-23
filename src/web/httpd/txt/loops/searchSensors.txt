@@ -1,0 +1,109 @@
+<h3>Поиск и добавление интерфейсных датчиков</h3>
+<p class="error">
+	<b>ПРЕДУПРЕЖДЕНИЕ:</b> После добавления и/или изменения конфигурации датчиков контроллер должен быть перезагружен.
+</p>
+<div id="id_sensors" class="content_overflow">
+	<div>
+		<p>
+			Подключите правильно настроенные устройства к разъему RS-485.<br>
+			Правильная настройка включает в себя:<br>
+		</p>
+		<ol>
+			<li>Адрес устройства от 1 и до 253 включительно</li>
+			<li>Скорость интерфейса RS-485 совпадает со скоростью контроллера Б-419</li>
+		</ol>
+	</div>
+	<div>
+		<input type="button" id="id_add_man" class="width50" value="Добавить устройство вручную" onclick="showPopUp()">
+	</div>
+	<br>
+	<div>
+		<div>
+			<label class='width20'>Искать с </label>
+			<input type="text" id="id_start_addr" class="width15" min="1" max="253" placeholder="1" value="1">
+			<label class='width20'>адреса по </label>
+			<input type="text" id="id_end_addr" class="width15" min="1" max="253" placeholder="253" value="253">
+			<label class='width30'>включительно.</label>
+		</div>
+	</div>
+	<br>
+	<div class="fieldset_div">
+		<input type="button" id="id_auto_search" class="width50" value="Поиск устройств">
+		<div class="width15" id="id_search_txt"></div>
+	</div>
+	<div>
+		<input type="button" id="id_auto_search" class="width50" value="Очистить поиск" onclick="clearSearch();">
+	</div>
+	<br>
+	<div id="id_sens_mass">
+	</div>
+	<hr>
+</div>
+<div>
+	<input type="button" id="id_save" class="width30" value="Записать" onclick="saveDevices();">
+	<input type="button" id="id_reboot" class="width30" value="Перезагрузить" onclick="rebootDev();">
+</div>
+
+
+<div class="popup reg_form" id="popup_a">
+	<div class="fieldset_div">
+		<a class="close" href="#" onclick="closePopUp()">Close</a>
+		<hr>
+	</div>
+	<div>
+		<input id="hiden_in" hidden>
+		<div class="fieldset_div">
+			<label class='width70'>Адрес</label>
+			<input type="text" id="id_addr" min="1" max="253" onblur="minMaxCheck(this)" class="width30" placeholder="1">
+		</div>
+		<div class="fieldset_div">
+			<label class="width70">Тип устройства</label>
+			<select class="width30" id="id_name" size="1">
+				<option selected value="1">STS-107</option>
+				<option value="2">STS-123</option>
+			</select>
+		</div>
+		<div><div>
+			<label class="width75">Устройство:</label>
+			<label class="width75">Внутренний номер 0</label>
+			<input class="hide width25" id="id_loop" type="checkbox"/>
+			<label for="id_loop" class="width25">Параметры:</label>
+			<select class="width50" id="id_mode" size="1">
+				<option value="0">Отключен</option>
+				<option selected value="1">Охранный</option>
+<!-- 				<option value="2">Охранный с датчиком вскрытия</option> -->
+				<option value="3">Охранный входной</option>
+				<option value="4">Тревожный</option>
+			</select>
+			<div>
+				<input id="id_check_param" hidden>
+				<input id="id_section" hidden value="0">
+				<div class="fieldset_div">
+					<label for="id_check_param_0" class="width75">Автоперевзятие из невзятия:</label>
+					<input class="width25" id="id_check_param_0" type="checkbox" onchange="setDeviceParam(this, 0, 'id_check_param');" />
+				</div>
+				<div class="fieldset_div">
+					<label for="id_check_param_1" class="width75">Автоперевзятие из тревоги:</label>
+					<input class="width25" id="id_check_param_1" type="checkbox" onchange="setDeviceParam(this, 1, 'id_check_param');"/>
+				</div>
+				<div class="fieldset_div">
+					<label for="id_check_param_2" class="width75">Без права снятия с охраны:</label>
+					<input class="width25" id="id_check_param_2" type="checkbox" onchange="setDeviceParam(this, 2, 'id_check_param');"/>
+				</div>
+				<div class="fieldset_div">
+					<label for="id_time_delay_guard" class="width75">Задержка перехода под охрану, сек:</label>
+					<input class="width25" id="id_time_delay_guard" type="number"  name="minAmpl_2" autocomplete="off" value="0"/>
+				</div>
+				<div class="fieldset_div">
+					<label for="id_delay_alarm" class="width75">Задержка перехода в тревогу, сек:</label>
+					<input class="width25" id="id_delay_alarm" type="number" name="minAmpl_2" autocomplete="off" value="0"/>
+				</div>
+				<div class="fieldset_div">
+					<label for="id_delay_recovery_alarm" class="width75">Задержка восстановления из тревоги, сек:</label>
+					<input class="width25" id="id_delay_recovery_alarm" type="number" name="minAmpl_2" autocomplete="off" value="0"/>
+				</div>
+			</div>
+		</div></div>
+		<button type="button" onclick="saveDevice();">Добавить устройство</button>
+	</div>
+</div>

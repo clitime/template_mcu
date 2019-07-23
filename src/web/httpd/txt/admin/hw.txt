@@ -1,0 +1,27 @@
+<h3>Дополнительно</h3>
+<div class="result fail" style="display:none">
+	ОШИБКА: Не удалось обработать запрос. Проверьте правильность введённых данных и повторите попытку.
+</div>
+<p class="error">
+	<b>ПРЕДУПРЕЖДЕНИЕ:</b> Ввод некорректных параметров может привести к потере связи с контроллером.</p>
+<p>Введите новое значение MAC адреса:</p>
+
+<form name="form_hw" onload="Bol()">
+	<fieldset class="fieldset">
+		<div class="fieldset_div">
+			<label class="width75" for="id_hw">MAC адрес:</label>
+			<input class="width25" id="id_hw" type="text" name="hw" value="" placeholder="00:00:00:00:00:00" />
+		</div>
+<!--
+		<div>
+			<input type="button" class="width50" value="Сохранить MAC-адрес" id="id_sm" disabled hidden="true" onclick="setParam('hw'); return false;" />
+		</div>
+-->
+		<div>
+			<input type="button" id="id_def" class="width30" value="Сбросить настройки" onclick="setDefParam('hw'); return false;" />
+			<input type="button" class="width7 display_none"/>
+			<input type="button" id="id_save" class="width30" value="Записать" onclick="setParam('hw'); return false;" />
+			<input type="button" id="id_apply" class="width30 display_none" value="Применить" onclick="applyParam(); return false;"/>
+		</div>
+	</fieldset>
+</form>

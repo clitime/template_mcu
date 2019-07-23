@@ -1,0 +1,12 @@
+<form name="form_login">
+	<fieldset>
+	
+		<div>
+			<label>Завершено!</label>
+			<td>&nbsp;</td>
+		</div>
+		<div>
+			<input type="button" class="sm" value="Перезагрузить" id="sm" onclick="link_menu('reset'); return false;"/>
+		</div>						
+	</fieldset>
+</form>

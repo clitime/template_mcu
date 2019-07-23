@@ -1,0 +1,10 @@
+<h3>Постановка на охрану / снятие с охраны</h3>
+
+<div id="id_ctrl_guard">
+	
+</div>
+
+<div>
+	<input type="button" id="id_all_on" class="width35" value="Взять все" />
+	<input type="button" id="id_all_off" class="width35" value="Снять все" />
+</div>

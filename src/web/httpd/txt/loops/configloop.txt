@@ -1,0 +1,12 @@
+<h3>Конфигурация шлейфов сигнализации</h3>
+
+<div id="id_loops" class="content_overflow">
+</div>
+
+<div>
+	<input type="button" id="id_default" class="width30" value="Сбросить настройки"/>
+	<input type="button" class="width7 display_none"/>
+	<input type="button" id="id_save" class="width30" value="Записать"/>
+	<input type="button" id="id_apply" class="width30" value="Применить"/>
+</div>
+

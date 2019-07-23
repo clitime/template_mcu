@@ -1,0 +1,30 @@
+<h3>Настройки авторизации</h3>
+<div class="result" style="display:none">
+	ОШИБКА: Не удалось обработать запрос. Проверьте правильность введённых данных и повторите попытку.
+</div>
+<p class="error">
+	<b>ПРЕДУПРЕЖДЕНИЕ:</b> Ввод некорректных параметров может привести к потере связи с контроллером.</p>
+<p class="error">
+	<b>ПРЕДУПРЕЖДЕНИЕ:</b> После изменения настроек контроллер будет перезагружен.</p>
+<p>Введите настройки контроллера:</p>
+
+<form name="form_auth">
+	<fieldset class="fieldset">
+		<fieldset>
+			<div class="fieldset_div">
+				<label class="width75" for="id_login"><b>Логин:</b></label>
+				<input class="width25" id="id_login" type="text" name="login" autocomplete="off" required value="" />
+			</div>
+			<div class="fieldset_div">
+				<label class="width75" for="id_password"><b>Пароль:</b></label>
+				<input class="width25" id="id_password" type="password" maxlength=20 minlength=4 name="password" autocomplete="off" value="" placeholder="**************" required onKeyUp='chp(event)' />
+			</div>
+		</fieldset>
+		<div>
+			<input type="button" id="id_def" class="width30" value="Сбросить настройки" onclick="setDefParam('login'); return false;" />
+			<input type="button" class="width7 display_none"/>
+			<input type="button" id="id_save" class="width30" value="Записать" onclick="setParam('login'); return false;" />
+			<input type="button" id="id_apply" class="width30" value="Применить" onclick="applyParam(); return false;"/>
+		</div>
+		</fieldset>
+</form>

@@ -1,0 +1,21 @@
+<div class="result" id="result" style="display:none">
+	ОШИБКА: Не удалось обработать запрос или послано слишком большое количество данных.  Проверьте правильность введённых данных и повторите попытку.
+</div>
+<p class="error" style="display:none">
+	<b>ПРЕДУПРЕЖДЕНИЕ:</b> Ввод некорректных параметров может привести к потере связи с контроллером.</p>
+
+<form name="form_login">
+	<fieldset>
+		<div>
+			<label><b>Логин:</b></label>
+			<td><input id="id_login" type="text" name="login" value=""/>
+		</div>
+		<div>
+			<label><b>Пароль:</b></label>
+			<td><input id="id_password" type="password" name="password" value="" onKeyUp='chp(event)'/>
+		</div>
+		<div>
+			<input type="button" class="sm" value="Войти" id="sm" onclick="checkAuth(); return false;"/>
+		</div>
+	</fieldset>
+</form>

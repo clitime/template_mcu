@@ -1,5 +1,6 @@
 #include "ethDmaProcess.h"
 #include "stm32f4x7_eth.h"
+#include "lwipopts.h"
 
 
 static ETH_DMADESCTypeDef  DMARxDscrTab[ETH_RXBUFNB] __attribute__ ((aligned (4))); /* Ethernet Rx DMA Descriptor */
@@ -49,7 +50,7 @@ FrameTypeDef ETH_Get_Received_Frame_interrupt(void) {
     FrameTypeDef frame = {.length = 0, .buffer = 0, .descriptor = NULL};
     /* scan descriptors owned by CPU */
     for (uint32_t i = 0; i < ETH_RXBUFNB; i++) {
-        if ((DMARxDescToGet->Status & ETH_DMARxDesc_OWN) == (uint32_t)RESET) {
+        if ((DMARxDescToGet->Status & ETH_DMARxDesc_OWN) != (uint32_t)RESET) {
             break;
         }
         /* check if first segment in frame */
@@ -102,8 +103,8 @@ void ETH_SetDMARxDescOwnBit(volatile ETH_DMADESCTypeDef *DMARxDesc) {
 }
 
 
-void ETH_setNextDMADescriptor(volatile ETH_DMADESCTypeDef *DMARxDesc) {
-    DMARxDesc = (ETH_DMADESCTypeDef *)(DMARxDesc->Buffer2NextDescAddr);
+ETH_DMADESCTypeDef *ETH_setNextDMADescriptor(volatile ETH_DMADESCTypeDef *DMARxDesc) {
+    return (ETH_DMADESCTypeDef *)(DMARxDesc->Buffer2NextDescAddr);
 }
 
 

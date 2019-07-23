@@ -1,0 +1,11 @@
+<form name="form_false">
+	<fieldset>
+		<div>
+			<label>Завершено с ошибкой! Некорректная прошивка.</label>
+			<td>&nbsp;</td>
+		</div>
+		<div>
+			<input type="button" class="sm" value="Перезагрузить" id="sm" onclick="reboot(); return false;"/>
+		</div>						
+	</fieldset>
+</form>

@@ -1,0 +1,22 @@
+<h1>Авторизация</h1>
+<div class="result" id="result" style="display:none">
+	ОШИБКА: Не удалось обработать запрос или послано слишком большое количество данных.  Проверьте правильность введённых данных и повторите попытку.
+</div>
+<p class="error" style="display:none">
+	<b>ПРЕДУПРЕЖДЕНИЕ:</b> Ввод некорректных параметров может привести к потере связи с контроллером.</p>
+
+<form name="form_login">
+	<fieldset class="fieldset">
+		<div class="fieldset_div">
+			<label for="id_login" class='width75'><b>Логин:</b></label>
+			<td><input id="id_login" type="text" name="login" value="" autocomplete="off"/>
+		</div>
+		<div class="fieldset_div">
+			<label for="id_password" class='width75'><b>Пароль:</b></label>
+			<td><input id="id_password" type="password" name="password" autocomplete="off" value="" onKeyUp='chp(event)'/>
+		</div>
+		<div>
+			<input type="button" class="width50" value="Войти" id="sm" onclick="checkAuth(); return false;"/>
+		</div>
+	</fieldset>
+</form>

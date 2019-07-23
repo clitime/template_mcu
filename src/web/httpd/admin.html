@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Б-419</title>
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="stylesheet" href="style.css">
+		<script src="/js/admin.js"></script>
+		<meta charset="utf-8">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Cache-Control" content="must-revalidate">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Expires" content="-1">
+	</head>
+	<body onLoad="BoL()">
+		<div class="application">
+			<div class="width100">
+				<div class="img"><img src="/img/stilsoft.gif" alt="Stilsoft"/></div>
+				<div class="base">
+					<div class="title_left"><a href="/index.html" id="info">Вернуться на главную</a></div>
+					<div class="title_left"><a href="/admin.html" id="info">Служебные параметры</a></div>
+					<div class="title_right"><a href="/index.html" id="info">Контроллер Б-419</a></div>
+				</div>
+			</div>
+			<p class="error" id="iderror">
+							<b>ПРЕДУПРЕЖДЕНИЕ:</b> Не поддерживается Internet Explorer. Используйте для работы Google Chrome или Mozilla FireFox</p>
+			<div class="base">
+				<div class="left-bar" id="main-menu">
+					<a href="#!/ip" id="menu_0" onclick="link_menu(ip); return false;">Сетевые параметры</a>
+					<a href="#!/login" id="menu_1" onclick="link_menu(login); return false;">Настройки авторизации</a>
+					<a href="#!/hw" id="menu_2" onclick="link_menu(hw); return false;">Дополнительно</a>
+					<a href="#!/converter" id="menu_3" onclick="link_menu(converter); return false;">Конфигурация RS-485</a>
+					<a href="#!/system" id="menu_4" onclick="link_menu(system); return false;">Система</a>
+				</div>
+				<div class="width80">
+					<div class="error" id="mac_state">
+		      	ВНИМАНИЕ: MAC адрес не задан. Требуется задать MAC адрес. <a href="#!/hw" id="menu_net1" onclick="link_menu('hw'); return false;">Настройка MAC адреса.</a>
+					</div>
+					<div id="content" class="content">
+						<h3>Администрирование</h3>
+						<p text-align="justify">В этом разделе вы можете настроить сетевые параметры контроллера, авторизации, конфигурацию конвертера интерфейсов.</p>
+					</div>
+				</div>
+			</div>
+			<div id="version" class="footer">Версия ПО:</div>
+			<div id="footer" class="footer">&copy; 2018 <a href="http://stilsoft.ru/">ГК "Стилсофт".</a> Все права защищены.</div>
+		</div>
+	</body>
+</html>

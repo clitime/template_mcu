@@ -1,0 +1,7 @@
+<form name="form_login">
+	<fieldset>
+		<div>
+			<input type="button" class="input_width30" value="Стартовая страница" id="sm" onclick="document.location.replace('/'); return false;"/>
+		</div>						
+	</fieldset>
+</form>

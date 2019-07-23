@@ -16,6 +16,10 @@
 #include "physics.h"
 #include "ethernetif.h"
 
+#include "webStatic.h"
+#include "http_server.h"
+#include "lwipopts.h"
+
 Ethernet_t eth = {
     {192, 168, 70, 212},
     {255, 255, 255, 0},
@@ -27,9 +31,12 @@ void ethernetTask(void *p) {
     (void)p;
 
     lwipInit(&eth);
-    for (;;) {
 
-    }
+    http_server_init();
+#if LWIP_STATS
+	http_stat_init();
+#endif
+    vTaskDelete(NULL);
 }
 
 

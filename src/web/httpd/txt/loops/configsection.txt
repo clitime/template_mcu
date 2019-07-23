@@ -1,0 +1,148 @@
+<h3>Конфигурация разделов</h3>
+
+<!--<form name="form_confl">
+	<fieldset class="fieldset">
+		<legend><b>Разделы</b></legend>
+-->
+	<div class="border1px">
+	<center><b>Разделы</b></center>
+	<table border="0" width="100%" cellpadding="3">
+
+<tbody id="id_section_table">
+	<tr>
+		<td>
+		
+		<input class="hide width25" id="l1" type="checkbox"/>
+		<label for="l1" class='width50'>Нераспределенные датчики</label>
+
+		<div>
+		
+			<div>
+			<table class="table_align_left" border="0" width="100%" cellpadding="3">
+				<tbody id="id_table0">
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №1</label></th>
+					</tr>
+					
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №2</label></th>
+					</tr>
+					
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №3</label></th>
+					</tr>
+					
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №4</label></th>
+					</tr>
+					
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №5</label></th>
+					</tr>
+					
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №6</label></th>
+					</tr>
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №7</label></th>
+					</tr>
+					
+					<tr>
+						<th><label class='width75'>Шлейф сигнализации №8</label></th>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	
+		</td>
+	</tr>
+	</tbody>
+	</table>
+	
+		<div>
+			<input type="button" id="id_default" class="width30" value="Добавить раздел" onclick="showPopUpSS()"/>
+			<input type="button" class="width7 display_none"/>
+			<input type="button" id="id_save" class="width30" value="Записать" onclick="setSectionParam(); return false;" />
+			<input type="button" id="id_apply" class="width30 display_none" value="Применить" onclick="applyParam(); return false;"/>
+		</div>
+	</div>
+	
+	
+	
+<!--
+	<div class="base margin3px">
+	<div class="width50">
+	<input type="button" id="id_add_sensors'+ix+'" class="width50 show_popup margin3px"  href="#" value="Добавить раздел" \
+						onclick="showPopUpSS()"/>
+						</div>
+		<div id="id_save_btn" class="width50">
+			<input type="button" id="id_save" class="width50 margin3px" value="Записать" onclick="setSectionParam(); return false;" />
+		</div>
+	</div>
+-->
+	
+	<!--
+	</fieldset>
+</form>
+-->
+
+
+<div class="popup reg_form" id="popup_a">
+	<a class="close" href="#" onclick="closePopUp()">Close</a>
+	<center><p>Добавление датчиков</p></center>
+	<input id="hiden_in" hidden>
+	<div id="id_sensors_table">
+	<div>
+		<label for="id_ev0" class="width45">Шлейф сигнализации № 1:</label>
+		<label id="id_section0" for="id_ev0" class="width25"></label>
+		<input id="id_ev0" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev1" class="width45">Шлейф сигнализации № 2:</label>
+		<label id="id_section1" for="id_ev1" class="width25"></label>
+		<input id="id_ev1" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev2" class="width45">Шлейф сигнализации № 3:</label>
+		<label id="id_section2" for="id_ev2" class="width25"></label>
+		<input id="id_ev2" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev3" class="width45">Шлейф сигнализации № 4:</label>
+		<label id="id_section3" for="id_ev3" class="width25"></label>
+		<input id="id_ev3" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev4" class="width45">Шлейф сигнализации № 5:</label>
+		<label id="id_section4" for="id_ev4" class="width25"></label>
+		<input id="id_ev4" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev5" class="width45">Шлейф сигнализации № 6:</label>
+		<label id="id_section5" for="id_ev5" class="width25"></label>
+		<input id="id_ev5" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev6" class="width45">Шлейф сигнализации № 7:</label>
+		<label id="id_section6" for="id_ev6" class="width25"></label>
+		<input id="id_ev6" type="checkbox"/>
+	</div>
+	<div>
+		<label for="id_ev7" class="width45">Шлейф сигнализации № 8:</label>
+		<label id="id_section7" for="id_ev7" class="width25"></label>
+		<input id="id_ev7" type="checkbox"/>
+	</div>
+	</div>
+	<button type="button" onclick="addSectionSensors()">Сохранить</button>
+</div>
+
+<div class="popup reg_form" id="popup_s">
+	<center><p>Доавление раздела</p></center>
+	<a class="close" href="#" onclick="closePopUpSS()">Close</a>
+	<input id="hiden_in" hidden>
+	<div id="id_sel_sec">
+		<label  class="width25">Раздел №:</label>
+		<button id="id_save_section" class="btn_margin" type="button" onclick="insertSectionRaw()">Сохранить</button>
+	</div>
+</div>
