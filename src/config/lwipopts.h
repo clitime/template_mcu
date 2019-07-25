@@ -31,7 +31,7 @@
  * SO_RCVTIMEO processing.
  */
 #define LWIP_SO_RCVTIMEO            1
-#define LWIP_TCP_KEEPALIVE          0 	//need for keepalive RTSP session
+#define LWIP_TCP_KEEPALIVE          1
 /**
  * LWIP_SO_SNDRCVTIMEO_NONSTANDARD==1: SO_RCVTIMEO/SO_SNDTIMEO take an int
  * (milliseconds, much like winsock does) instead of a struct timeval (default).
@@ -61,7 +61,7 @@
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
  */
-#define MEM_SIZE                (4*1024)
+#define MEM_SIZE                (8*1024)
 /**
  * MEMP_OVERFLOW_CHECK: memp overflow protection reserves a configurable
  * amount of bytes before and after each memp element in every pool and fills
@@ -86,7 +86,7 @@
  * MEMP_NUM_NETCONN: the number of struct netconns.
  * (only needed if you use the sequential API, like api_lib.c)
  */
-#define MEMP_NUM_NETCONN                10
+#define MEMP_NUM_NETCONN                16
 /**
  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool.
  */

@@ -106,7 +106,6 @@ static void httpServerTask (void *arg) {
     struct sockaddr_in local;
     struct sockaddr_in from;
     int fromlen;
-    int opt;
 
     connQueue = xQueueCreate(10, sizeof(int));
     if (connQueue == NULL) {
@@ -130,15 +129,7 @@ static void httpServerTask (void *arg) {
         vTaskDelete(NULL);
     }
 
-    opt = 1;
-    if (setsockopt(listen_fd, IPPROTO_TCP, TCP_NODELAY, (void *)&opt, sizeof(opt)) < 0) {
-    }
-
-    struct timeval recv_time = {1, 0};
-    if (setsockopt(listen_fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&recv_time, sizeof(recv_time)) < 0) {
-    }
-
-    if (listen (listen_fd, 1) < 0) {
+    if (listen (listen_fd, 5) < 0) {
     }
 
     fromlen = sizeof(from);
@@ -163,6 +154,12 @@ static void httpServerTask (void *arg) {
 
 
 static void httpServer (int conn) {
+    int opt = 1;
+    setsockopt(conn, IPPROTO_TCP, TCP_NODELAY, (void *)&opt, sizeof(opt));
+    struct timeval recv_time = {1, 0};
+    setsockopt(conn, SOL_SOCKET, SO_RCVTIMEO, (void *)&recv_time, sizeof(recv_time));
+    setsockopt(conn, SOL_SOCKET, SO_SNDTIMEO, (void *)&recv_time, sizeof(recv_time));
+
     char *uri = NULL;
 
     char ext[5];

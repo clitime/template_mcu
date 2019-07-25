@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx,DEBUG_PORT</Define>
+              <Define>USE_STDPERIPH_DRIVER,STM32F427_437xx</Define>
               <Undefine></Undefine>
               <IncludePath>..\src\config;..\lib\spl\CMSIS\Include;..\lib\spl\CMSIS\Device\ST\STM32F4xx\Include;..\lib\spl\STM32F4xx_StdPeriph_Driver\inc;..\src\firm;..\src\system;..\src\drivers;..\lib\FreeRTOS\Source\include;..\lib\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\src\debug;..\src\drivers\ethernet;..\src\drivers\lwip;..\src\drivers\lwip\include;..\src\drivers\lwip\include\arch;..\lib\lwip\src\include;..\lib\lwip\src\include\lwip;..\lib\lwip\src\include\lwip\priv;..\lib\lwip\src\include\lwip\prot;..\lib\lwip\src\include\netif;..\src\web</IncludePath>
             </VariousControls>
