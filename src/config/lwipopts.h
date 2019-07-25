@@ -1,11 +1,6 @@
 #ifndef __LWIPOPTS__H__
 #define __LWIPOPTS__H__
 
-// #if defined (__GNUC__)
-// 	#define LWIP_TIMEVAL_PRIVATE 0
-// #else
-// 	#define LWIP_TIMEVAL_PRIVATE 1
-// #endif
 
 /**
  * The number of sys timeouts used by the core stack (not apps)
@@ -35,7 +30,7 @@
  * LWIP_SO_RCVTIMEO==1: Enable receive timeout for sockets/netconns and
  * SO_RCVTIMEO processing.
  */
-#define LWIP_SO_RCVTIMEO            0
+#define LWIP_SO_RCVTIMEO            1
 #define LWIP_TCP_KEEPALIVE          0 	//need for keepalive RTSP session
 /**
  * LWIP_SO_SNDRCVTIMEO_NONSTANDARD==1: SO_RCVTIMEO/SO_SNDTIMEO take an int
@@ -66,7 +61,7 @@
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
  */
-#define MEM_SIZE                (16*1024)
+#define MEM_SIZE                (4*1024)
 /**
  * MEMP_OVERFLOW_CHECK: memp overflow protection reserves a configurable
  * amount of bytes before and after each memp element in every pool and fills
@@ -83,12 +78,6 @@
  */
 #define MEMP_SANITY_CHECK               1
 /**
- * MEMP_NUM_SYS_TIMEOUT: the number of simultaneously active timeouts.
- * The default number of timeouts is calculated here for all enabled modules.
- * The formula expects settings to be either '0' or '1'.
- */
-#define MEMP_NUM_SYS_TIMEOUT            17
-/**
  * MEMP_NUM_NETBUF: the number of struct netbufs.
  * (only needed if you use the sequential API, like api_lib.c)
  */
@@ -97,7 +86,7 @@
  * MEMP_NUM_NETCONN: the number of struct netconns.
  * (only needed if you use the sequential API, like api_lib.c)
  */
-#define MEMP_NUM_NETCONN                16
+#define MEMP_NUM_NETCONN                10
 /**
  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool.
  */
@@ -112,7 +101,7 @@
  * If the application sends a lot of data out of ROM (or other static memory),
  * this should be set high.
  */
-#define MEMP_NUM_PBUF           16
+#define MEMP_NUM_PBUF                   16
 /**
  * MEMP_NUM_RAW_PCB: Number of raw connection PCBs
  * (requires the LWIP_RAW option)
@@ -128,12 +117,12 @@
  * MEMP_NUM_TCP_PCB: the number of simultaneously active TCP connections.
  * (requires the LWIP_TCP option)
  */
-#define MEMP_NUM_TCP_PCB                10
+#define MEMP_NUM_TCP_PCB                8
 /**
  * MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP connections.
  * (requires the LWIP_TCP option)
  */
-#define MEMP_NUM_TCP_PCB_LISTEN         8
+#define MEMP_NUM_TCP_PCB_LISTEN         3
 /**
  * MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP segments.
  * (requires the LWIP_TCP option)
@@ -156,7 +145,14 @@
 /* MEMP_NUM_TCPIP_MSG_*: the number of struct tcpip_msg, which is used
    for sequential API communication and incoming packets. Used in
    src/api/tcpip.c. */
-#define MEMP_NUM_TCPIP_MSG_API   16
+#define MEMP_NUM_TCPIP_MSG_API   32
+
+
+#define MEMP_NUM_LOCALHOSTLIST          0
+
+#define ARP_TABLE_SIZE                  5
+
+#define ETH_PAD_SIZE                    2
 /*
 	 ------------------------------------------------
 	 ---------- Internal Memory Pool Sizes ----------
@@ -195,9 +191,9 @@
 /**
  * TCP_LISTEN_BACKLOG: Enable the backlog option for tcp listen pcb.
  */
-#define TCP_LISTEN_BACKLOG      5
+#define TCP_LISTEN_BACKLOG      8
 /* Maximum number of retransmissions of data segments. */
-#define TCP_MAXRTX              12
+#define TCP_MAXRTX              4
 
 /* Maximum number of retransmissions of SYN segments. */
 #define TCP_SYNMAXRTX           4
@@ -226,7 +222,7 @@
 
 #define LWIP_IGMP				0
 
-#define LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT 10000
+#define LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT 5000
 /* IP reassembly and segmentation.These are orthogonal even
  * if they both deal with IP fragments */
 #define IP_REASSEMBLY           1
@@ -314,12 +310,15 @@
 #include "FreeRTOSConfig.h"
 // ---------- OS options ----------
 #define TCPIP_THREAD_STACKSIZE          1024
-#define TCPIP_MBOX_SIZE                 30
-#define DEFAULT_UDP_RECVMBOX_SIZE       50
-#define DEFAULT_TCP_RECVMBOX_SIZE       30
-#define DEFAULT_ACCEPTMBOX_SIZE         30
+// #define DEFAULT_RAW_RECVMBOX_SIZE       10
+#define TCPIP_MBOX_SIZE                 10
+#define DEFAULT_UDP_RECVMBOX_SIZE       10
+#define DEFAULT_TCP_RECVMBOX_SIZE       10
+#define DEFAULT_ACCEPTMBOX_SIZE         10
 #define DEFAULT_THREAD_STACKSIZE        1024
 #define TCPIP_THREAD_PRIO               (configMAX_PRIORITIES - 3)
+
+
 
 
 #endif //__LWIPOPTS__H_H

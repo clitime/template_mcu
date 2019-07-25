@@ -68,6 +68,7 @@
 
 
 static xSemaphoreHandle phyIRQSemaphore = NULL;
+static xSemaphoreHandle dmaIRQSemaphore = NULL;
 static xSemaphoreHandle ethifInputSemaphore = NULL;
 static ETH_InitTypeDef ETH_InitStructure;
 
@@ -125,18 +126,18 @@ static void linkStatusCallback(struct netif *netif) {
 
         ETH_MACInit(&ETH_InitStructure);
 
-        ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, ENABLE);
-        ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, ENABLE);
 
         PHY_configIRQ_linkDownUp();
 
         ETH_DMA_chainInit(ETH_MAC_Address0, netif->hwaddr);
+        ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, ENABLE);
+        ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, ENABLE);
         ETH_Start();
         tcpip_callback((tcpip_callback_fn)netif_set_up, &xnetif);
     } else {
         ETH_Stop();
         ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, DISABLE);
-      ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, DISABLE);
+        ETH_DMAITConfig(ETH_DMA_IT_AIS | ETH_DMA_IT_RBU, DISABLE);
         tcpip_callback((tcpip_callback_fn)netif_set_down, &xnetif);
     }
 }
@@ -167,6 +168,22 @@ static void linkStatus(void *args) {
     }
 }
 
+
+static void unavailableRecvBuf(void *args) {
+    (void)args;
+
+    for (;;) {
+        xSemaphoreTake(dmaIRQSemaphore, portMAX_DELAY);
+
+        dPrintf(("Receive buffer unavailable\r\n"));
+        netif_set_link_down(&xnetif);
+        PHY_hardReset();
+        vTaskDelay(500);
+        netif_set_link_up(&xnetif);
+        PHY_configIRQ_linkDownUp();
+    }
+}
+
 /**
  * In this function, the hardware should be initialized.
  * Called from ethifInitialize().
@@ -189,6 +206,11 @@ static void lowLevelInit(struct netif *netif) {
     if (phyIRQSemaphore == NULL) {
         vSemaphoreCreateBinary(phyIRQSemaphore);
         xSemaphoreTake(phyIRQSemaphore, 0);
+    }
+
+    if (dmaIRQSemaphore == NULL) {
+        vSemaphoreCreateBinary(dmaIRQSemaphore);
+        xSemaphoreTake(dmaIRQSemaphore, 0);
     }
 
     ETH_ConfigIO();
@@ -232,16 +254,20 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p) {
     u8 *buffer = (u8 *)(DmaTxDesc->Buffer1Addr);
     uint32_t framelen = 0U;
 
+
     if (p->tot_len > ETH_MAX_PACKET_SIZE) {
         return ERR_BUF;
     }
 
-    if((DmaTxDesc->Status & ETH_DMATxDesc_OWN) != (u32)RESET)
-    {
-      errval = ERR_USE;
-      goto error;
+    if((DmaTxDesc->Status & ETH_DMATxDesc_OWN) != (u32)RESET) {
+        errval = ERR_USE;
+        goto error;
     }
 
+
+    #if ETH_PAD_SIZE
+        pbuf_remove_header(p, ETH_PAD_SIZE); /* drop the padding word */
+    #endif
 
     for (q = p; q != NULL; q = q->next) {
         /* Send the data from the pbuf to the interface, one pbuf at a
@@ -269,6 +295,9 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p) {
     }
     /* increase ifoutdiscards or ifouterrors on error */
 error:
+    #if ETH_PAD_SIZE
+        pbuf_add_header(p, ETH_PAD_SIZE); /* reclaim the padding word */
+    #endif
   //may be need clear flag ETH_DMASR_TUS if set
     if ((ETH->DMASR & ETH_DMASR_TUS) != (u32)RESET) {
         //Clear TUS ETHERNET DMA flag
@@ -315,6 +344,10 @@ static struct pbuf *low_level_input(struct netif *netif) {
         return p;
     }
 
+    #if ETH_PAD_SIZE
+        len += ETH_PAD_SIZE; /* allow room for Ethernet padding */
+    #endif
+
     p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
 
     if (p == NULL) {
@@ -324,6 +357,9 @@ static struct pbuf *low_level_input(struct netif *netif) {
         MIB2_STATS_NETIF_INC(netif, ifindiscards);
         return p;
     }
+    #if ETH_PAD_SIZE
+        pbuf_remove_header(p, ETH_PAD_SIZE); /* drop the padding word */
+    #endif
 
     len = 0U;
     uint8_t *buffer = (uint8_t *)frame.buffer;
@@ -352,6 +388,10 @@ static struct pbuf *low_level_input(struct netif *netif) {
         /* unicast packet*/
         MIB2_STATS_NETIF_INC(netif, ifinucastpkts);
     }
+
+    #if ETH_PAD_SIZE
+        pbuf_add_header(p, ETH_PAD_SIZE); /* reclaim the padding word */
+    #endif
 
     LINK_STATS_INC(link.recv);
      //When Rx Buffer unavailable flag is set: clear it and resume reception
@@ -437,10 +477,11 @@ static err_t ethifInitialize(struct netif *netif) {
 
     netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP;
 
-    xTaskCreate(ethifInput, "ethernetif", configMINIMAL_STACK_SIZE * 3, netif, configMAX_PRIORITIES - 2, NULL);
+    xTaskCreate(ethifInput, "ethernetif", configMINIMAL_STACK_SIZE * 3, netif, configMAX_PRIORITIES - 1, NULL);
 
     netif_set_link_callback(netif, linkStatusCallback);
     xTaskCreate(linkStatus, "linkStatus", configMINIMAL_STACK_SIZE * 1, NULL, MAIN_TASK_PRIO, NULL);
+    xTaskCreate(unavailableRecvBuf, "rbuStatus", configMINIMAL_STACK_SIZE * 1, NULL, MAIN_TASK_PRIO, NULL);
 
     return ERR_OK;
 }
@@ -456,13 +497,12 @@ void lwipInit(const Ethernet_t *eth) {
     IP4_ADDR(&netmask, eth->mask[0], eth->mask[1], eth->mask[2], eth->mask[3]);
     IP4_ADDR(&gw, eth->gw[0], eth->gw[1], eth->gw[2], eth->gw[3]);
 
+    dPrintf(("lwip starting!\r\n"));
     /* Create tcp_ip stack thread */
     tcpip_init( NULL, NULL );
     netif_add(&xnetif, &ipaddr, &netmask, &gw, NULL, &ethifInitialize, &tcpip_input);
     /*  Registers the default network interface.*/
     netif_set_default(&xnetif);
-
-    dPrintf(("lwip starting!\r\n"));
 }
 
 
@@ -470,7 +510,6 @@ void EXTI4_IRQHandler(void) {
     portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
     if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
-
         xSemaphoreGiveFromISR(phyIRQSemaphore, &xHigherPriorityTaskWoken);
 
         /* Clear the  EXTI line 0 pending bit */
@@ -494,6 +533,10 @@ void ETH_IRQHandler(void) {
 
     if (ETH_GetDMAITStatus(ETH_DMA_IT_RBU) != RESET) {
         ETH_DMAClearITPendingBit(ETH_DMA_IT_RBU | ETH_DMA_IT_AIS);
+    }
+
+    if ((ETH->DMASR & 0xe0000) >> 0x11 == 0x04) {
+        xSemaphoreGiveFromISR(dmaIRQSemaphore, &xHigherPriorityTaskWoken);
     }
 
     portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );

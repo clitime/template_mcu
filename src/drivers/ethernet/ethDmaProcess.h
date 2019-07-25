@@ -37,6 +37,7 @@ typedef struct{
 
 
 void ETH_DMA_chainInit(uint32_t MacAddr, uint8_t *addr);
+FrameTypeDef ETH_Get_Received_Frame(void);
 FrameTypeDef ETH_Get_Received_Frame_interrupt(void);
 void ETH_SetDMARxDescOwnBit(volatile ETH_DMADESCTypeDef *DMARxDesc);
 ETH_DMADESCTypeDef *ETH_setNextDMADescriptor(volatile ETH_DMADESCTypeDef *DMARxDesc);

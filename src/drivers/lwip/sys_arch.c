@@ -41,6 +41,8 @@
 #include "semphr.h"
 #include "task.h"
 
+#include "debugTask.h"
+
 int errno;
 /** Set this to 1 if you want the stack size passed to sys_thread_new() to be
  * interpreted as number of stack words (FreeRTOS-like).
@@ -54,7 +56,7 @@ int errno;
  * Default is 0 and locks interrupts/scheduler for SYS_ARCH_PROTECT().
  */
 #ifndef LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
-#define LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX     1
+#define LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX     0
 #endif
 
 /** Set this to 1 to include a sanity check that SYS_ARCH_PROTECT() and
@@ -66,7 +68,7 @@ int errno;
 
 /** Set this to 1 to let sys_mbox_free check that queues are empty when freed */
 #ifndef LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE
-#define LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE       1
+#define LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE       0
 #endif
 
 /** Set this to 1 to enable core locking check functions in this port.
@@ -133,8 +135,8 @@ sys_jiffies(void)
     return xTaskGetTickCount();
 }
 
-#if SYS_LIGHTWEIGHT_PROT
 
+#if SYS_LIGHTWEIGHT_PROT
 sys_prot_t sys_arch_protect(void) {
 #if LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
     BaseType_t ret;
@@ -232,6 +234,7 @@ void sys_mutex_free(sys_mutex_t *mutex) {
 
 #endif /* !LWIP_COMPAT_MUTEX */
 
+static uint32_t semphCnt = 0;
 err_t sys_sem_new(sys_sem_t *sem, u8_t initial_count) {
     LWIP_ASSERT("sem != NULL", sem != NULL);
     LWIP_ASSERT("initial_count invalid (not 0 or 1)",
@@ -242,6 +245,9 @@ err_t sys_sem_new(sys_sem_t *sem, u8_t initial_count) {
         SYS_STATS_INC(sem.err);
         return ERR_MEM;
     }
+
+    dPrintf(("%d. create semaph: %p\n", semphCnt, sem->sem));
+    semphCnt++;
     SYS_STATS_INC_USED(sem);
 
     if (initial_count == 1) {
@@ -257,6 +263,7 @@ void sys_sem_signal(sys_sem_t *sem) {
     LWIP_ASSERT("sem->sem != NULL", sem->sem != NULL);
 
     ret = xSemaphoreGive(sem->sem);
+    dPrintf(("\tgive semaph: %p\n", sem->sem));
     /* queue full is OK, this is a signal only... */
     LWIP_ASSERT("sys_sem_signal: sane return value",
         (ret == pdTRUE) || (ret == errQUEUE_FULL));
@@ -267,6 +274,7 @@ u32_t sys_arch_sem_wait(sys_sem_t *sem, u32_t timeout_ms) {
     LWIP_ASSERT("sem != NULL", sem != NULL);
     LWIP_ASSERT("sem->sem != NULL", sem->sem != NULL);
 
+    dPrintf(("\ttake semaph: %p\n", sem->sem));
     if(!timeout_ms) {
         /* wait infinite */
         ret = xSemaphoreTake(sem->sem, portMAX_DELAY);
@@ -295,16 +303,28 @@ void sys_sem_free(sys_sem_t *sem) {
     if (sem->sem == NULL) {
         return;
     }
+
+    semphCnt--;
+    // for (uint8_t i = semIx; i > 0; i--) {
+    //     if (sem_test[i]->sem == sem->sem) {
+    //         sem_test[i] = NULL;
+    //     }
+    // }
+
+    dPrintf(("%d. delete semaph: %p\n", semphCnt, sem->sem));
     vSemaphoreDelete(sem->sem);
     sem->sem = NULL;
 }
 
 
+static uint32_t queueCnt = 0;
 err_t sys_mbox_new(sys_mbox_t *mbox, int size) {
     LWIP_ASSERT("mbox != NULL", mbox != NULL);
     LWIP_ASSERT("size > 0", size > 0);
 
     mbox->mbx = xQueueCreate((UBaseType_t)size, sizeof(void *));
+    dPrintf(("%d. create queue: %p. size = %d\n", queueCnt, mbox->mbx, size));
+    queueCnt++;
     if (mbox->mbx == NULL) {
         SYS_STATS_INC(mbox.err);
         return ERR_MEM;
@@ -424,7 +444,8 @@ void sys_mbox_free(sys_mbox_t *mbox) {
         }
     }
 #endif
-
+    queueCnt--;
+    dPrintf(("%d. delete queue: %p\n", queueCnt, mbox->mbx));
     vQueueDelete(mbox->mbx);
 
     SYS_STATS_DEC(mbox.used);

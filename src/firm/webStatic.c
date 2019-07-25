@@ -86,7 +86,7 @@ static void http_server_stat_thread(void *arg) {
 	struct sockaddr_in from;
 	int fromlen;
 	int newconn;
-	int opt = 0, retval;
+	int opt = 0;
 
 	sock = lwip_socket(AF_INET, SOCK_STREAM, 0);
 
@@ -111,8 +111,7 @@ static void http_server_stat_thread(void *arg) {
 	fromlen = sizeof(from);
 
 	opt = 1;
-	retval = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&opt, sizeof(opt));
-	// if (retval == -1) SYS_DEBUGF(SYS_STATISTIC_DBG, ("Error setsockopt!\r\n"));
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&opt, sizeof(opt));
 
 	for (;;) {
 		newconn = lwip_accept(sock, (struct sockaddr *)&from, (socklen_t *)&fromlen);

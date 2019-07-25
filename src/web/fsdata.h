@@ -3,9 +3,9 @@
 
 #include "fs.h"
 
-extern const struct fsdata_file file_txt_reboot_txt;
+extern const struct fsdata_file file_style_css;
 
-#define FS_ROOT file_txt_reboot_txt
+#define FS_ROOT file_style_css
 
 struct fsdata_file {
     const struct fsdata_file *next;

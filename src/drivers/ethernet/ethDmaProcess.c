@@ -46,6 +46,25 @@ void ETH_DMA_chainInit(uint32_t MacAddr, uint8_t *Addr) {
 }
 
 
+FrameTypeDef ETH_Get_Received_Frame(void) {
+    FrameTypeDef frame = {0,0,0};
+
+    /* Get the Frame Length of the received packet: substruct 4 bytes of the CRC */
+    #define CRC_SIZE 4
+    frame.length = ETH_GetDMARxDescFrameLength(DMARxDescToGet) - CRC_SIZE;
+    #undef CRC_SIZE
+    /* Get the address of the first frame descriptor and the buffer start address */
+    frame.descriptor = DMA_RX_FRAME_infos->FS_Rx_Desc;
+    frame.buffer =(DMA_RX_FRAME_infos->FS_Rx_Desc)->Buffer1Addr;
+    /* Update the ETHERNET DMA global Rx descriptor with next Rx descriptor */
+    /* Chained Mode */
+    /* Selects the next DMA Rx descriptor list for next buffer to read */
+    DMARxDescToGet = (ETH_DMADESCTypeDef*) (DMARxDescToGet->Buffer2NextDescAddr);
+    /* Return Frame */
+    return (frame);
+}
+
+
 FrameTypeDef ETH_Get_Received_Frame_interrupt(void) {
     FrameTypeDef frame = {.length = 0, .buffer = 0, .descriptor = NULL};
     /* scan descriptors owned by CPU */
